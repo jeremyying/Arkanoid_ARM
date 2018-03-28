@@ -43,7 +43,7 @@ startGame:
     b       menu
 
 drawArrow:
-    mov     r5, #759   //temp        //x coordinate to blackout
+    mov     r5, #744   //759 is base        //x coordinate to blackout
     mov     r6, #678   //temp        //y coordinate to blackout
     mov     r7, #36   //temp        //width
     mov     r8, #120  //temp        //height
@@ -61,10 +61,10 @@ blackout:
     blt     blackout
 
     cmp     r4, #1
-    moveq   r5, #759   //temp        //x coordinate of arrow on quit
+    moveq   r5, #744   //temp        //x coordinate of arrow on quit
     moveq   r6, #738   //temp        //y coordinate of arrow on quit
 
-    movne   r5, #759   //temp        //x coordinate of arrow on start
+    movne   r5, #744   //temp        //x coordinate of arrow on start
     movne   r6, #678   //temp        //y coordinate of arrow on start
 
     ldr r0, =drawArgs
