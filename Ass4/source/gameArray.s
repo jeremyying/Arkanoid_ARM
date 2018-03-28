@@ -2,7 +2,7 @@
 @ Code section
 .section .text
 
-.global main
+.global init_Array
 init_Array:
     push    {r4-r7}
 
@@ -87,7 +87,8 @@ bottFloor:
 
     pop     {r4-r7}
     mov     pc, lr
-
+
+
 @ Data section
 .section .data
 
