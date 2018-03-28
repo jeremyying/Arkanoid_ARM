@@ -14,10 +14,15 @@ waitLoop:
     bl      Read_SNES
     mov     r2, #0xffff     //no buttons pressed
     cmp     r1, r2
+
     beq     waitLoop
+
+
+
+
 ldrb    r2, [r0, #8]    //check A button, index button #-1
-    cmp     r0, #0
-    beq     pickOption
+    cmp     r2, #0
+    beq     pickOption //A is pressed
     ldrb    r2, [r0, #4]    //check UP button
     cmp     r2, #0
     beq     drawArrow      //display arrow on start
@@ -38,10 +43,10 @@ startGame:
     b       menu
 
 drawArrow:
-    mov     r5, #0   //temp        //x coordinate to blackout
-    mov     r6, #0   //temp        //y coordinate to blackout
-    mov     r7, #0   //temp        //width
-    mov     r8, #0   //temp        //height
+    mov     r5, #759   //temp        //x coordinate to blackout
+    mov     r6, #678   //temp        //y coordinate to blackout
+    mov     r7, #36   //temp        //width
+    mov     r8, #120  //temp        //height
 
 blackout:
     mov     r0, r5
@@ -56,23 +61,24 @@ blackout:
     blt     blackout
 
     cmp     r4, #1
-    moveq   r5, #0   //temp        //x coordinate of arrow on quit
-    moveq   r6, #0   //temp        //y coordinate of arrow on quit
-    movne   r5, #0   //temp        //x coordinate of arrow on start
-    movne   r6, #0   //temp        //y coordinate of arrow on start
+    moveq   r5, #759   //temp        //x coordinate of arrow on quit
+    moveq   r6, #738   //temp        //y coordinate of arrow on quit
 
-    ldr     r0, =drawArgs
-    ldr     r1, =arrow
-    str     r1, [r0]
-    mov     r1, r5           //x coordinate of arrow
-    str     r1, [r0, #4]
-    mov     r1, r6           //y coordinate of arrow
-    str     r1, [r0, #8]
-    mov     r1, #0   //temp        //width of arrow image
-    str     r1, [r0, #12]
-    mov     r1, #0   //temp        //height of arrow image
-    str     r1, [r0, #16]
-    bl      drawImage
+    movne   r5, #759   //temp        //x coordinate of arrow on start
+    movne   r6, #678   //temp        //y coordinate of arrow on start
+
+    ldr r0, =drawArgs
+    ldr r1, =arrow
+    str r1, [r0]
+    mov r1, r5 //x coord of arrow
+    str r1, [r0, #4]
+    mov r1, r6 //y coord of arrow
+    str r1, [r0, #8]
+    mov r1, #36 //image width of arrow
+    str r1, [r0, #12]
+    mov r1, #45 //image height of arrow
+    str r1, [r0, #16]
+    bl drawImage
     b       waitLoop
 
 endMenu:
@@ -142,6 +148,7 @@ MainMenuSelectionPrint:
     str r1, [r0, #16]
     bl drawImage
 
+/*
 MainMenuArrowPrint:
     ldr r0, =drawArgs
     ldr r1, =arrow
@@ -154,7 +161,7 @@ MainMenuArrowPrint:
     str r1, [r0, #12]
     mov r1, #45 //image height
     str r1, [r0, #16]
-    bl drawImage
+    bl drawImage*/
 
 
     //display creator names, and menu options, still to complete
@@ -166,4 +173,3 @@ MainMenuArrowPrint:
     //image labels: menuOpts (235x120), arrow (36x45), creator (292x98)
 
     pop     {r4-r7, pc}
-    mov pc, lr
