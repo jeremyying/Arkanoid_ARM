@@ -38,10 +38,10 @@ startGame:
     b       menu
 
 drawArrow:
-    mov     r5, #0           //x coordinate to blackout
-    mov     r6, #0           //y coordinate to blackout
-    mov     r7, #0           //width
-    mov     r8, #0           //height
+    mov     r5, #0   //temp        //x coordinate to blackout
+    mov     r6, #0   //temp        //y coordinate to blackout
+    mov     r7, #0   //temp        //width
+    mov     r8, #0   //temp        //height
 
 blackout:
     mov     r0, r5
@@ -56,10 +56,10 @@ blackout:
     blt     blackout
 
     cmp     r4, #1
-    moveq   r5, #0           //x coordinate of arrow on quit
-    moveq   r6, #0           //y coordinate of arrow on quit
-    movne   r5, #0           //x coordinate of arrow on start
-    movne   r6, #0           //y coordinate of arrow on start
+    moveq   r5, #0   //temp        //x coordinate of arrow on quit
+    moveq   r6, #0   //temp        //y coordinate of arrow on quit
+    movne   r5, #0   //temp        //x coordinate of arrow on start
+    movne   r6, #0   //temp        //y coordinate of arrow on start
 
     ldr     r0, =drawArgs
     ldr     r1, =arrow
@@ -68,9 +68,9 @@ blackout:
     str     r1, [r0, #4]
     mov     r1, r6           //y coordinate of arrow
     str     r1, [r0, #8]
-    mov     r1, #0           //width of arrow image
+    mov     r1, #0   //temp        //width of arrow image
     str     r1, [r0, #12]
-    mov     r1, #0           //height of arrow image
+    mov     r1, #0   //temp        //height of arrow image
     str     r1, [r0, #16]
     bl      drawImage
     b       waitLoop
@@ -123,3 +123,4 @@ blackLoop:
     //image labels: menuOpts (235x120), arrow (36x45), creator (292x98)
 
     pop     {r4-r7, pc}
+    mov pc, lr
