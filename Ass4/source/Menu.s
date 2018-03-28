@@ -132,9 +132,9 @@ MainMenuSelectionPrint:
     ldr r0, =drawArgs
     ldr r1, =menuOpts
     str r1, [r0]
-    mov r1, # //x coord
+    mov r1, #795 //x coord
     str r1, [r0, #4]
-    mov r1, # //y coord
+    mov r1, #678 //y coord
     str r1, [r0, #8]
     mov r1, #235 //image width
     str r1, [r0, #12]
@@ -146,9 +146,9 @@ MainMenuArrowPrint:
     ldr r0, =drawArgs
     ldr r1, =arrow
     str r1, [r0]
-    mov r1, # //x coord
+    mov r1, #759 //x coord
     str r1, [r0, #4]
-    mov r1, # //y coord
+    mov r1, #678 //y coord
     str r1, [r0, #8]
     mov r1, #36 //image width
     str r1, [r0, #12]
