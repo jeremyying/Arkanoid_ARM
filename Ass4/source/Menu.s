@@ -126,7 +126,7 @@ NamesPrint:
     str r1, [r0]
     mov r1, #240 //x coord
     str r1, [r0, #4]
-    mov r1, #24 //y coord
+    mov r1, #34 //y coord
     str r1, [r0, #8]
     mov r1, #292 //image width
     str r1, [r0, #12]
