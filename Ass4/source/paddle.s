@@ -80,13 +80,8 @@ attached:
 
 .global win
 win:
-    int.    0
+    .int    0
 
 .global lose
 lose:
     .int    0
-
-
-
-
-

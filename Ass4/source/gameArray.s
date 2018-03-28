@@ -2,7 +2,7 @@
 @ Code section
 .section .text
 
-.global main
+.global init_Array
 init_Array:
     push    {r4-r7}
 
@@ -94,8 +94,3 @@ bottFloor:
 .global myArray
 myArray:
 .skip       504*9
-
-
-
-
-
