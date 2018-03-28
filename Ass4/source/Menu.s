@@ -113,6 +113,49 @@ blackLoop:
     str     r1, [r0, #16]
     bl      drawImage
 
+//draws the names onto the menu
+NamesPrint:
+    ldr r0, =drawArgs
+    ldr r1, =creator
+    str r1, [r0]
+    mov r1, #240 //x coord
+    str r1, [r0, #4]
+    mov r1, #24 //y coord
+    str r1, [r0, #8]
+    mov r1, #292 //image width
+    str r1, [r0, #12]
+    mov r1, #98 //image height
+    str r1, [r0, #16]
+    bl drawImage
+
+MainMenuSelectionPrint:
+    ldr r0, =drawArgs
+    ldr r1, =menuOpts
+    str r1, [r0]
+    mov r1, # //x coord
+    str r1, [r0, #4]
+    mov r1, # //y coord
+    str r1, [r0, #8]
+    mov r1, #235 //image width
+    str r1, [r0, #12]
+    mov r1, #120 //image height
+    str r1, [r0, #16]
+    bl drawImage
+
+MainMenuArrowPrint:
+    ldr r0, =drawArgs
+    ldr r1, =arrow
+    str r1, [r0]
+    mov r1, # //x coord
+    str r1, [r0, #4]
+    mov r1, # //y coord
+    str r1, [r0, #8]
+    mov r1, #36 //image width
+    str r1, [r0, #12]
+    mov r1, #45 //image height
+    str r1, [r0, #16]
+    bl drawImage
+
 
     //display creator names, and menu options, still to complete
     //follow same process as the display of game name
