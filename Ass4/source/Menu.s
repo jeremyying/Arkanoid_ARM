@@ -114,8 +114,6 @@ blackLoop:
     bl      drawImage
 
 
-    poop
-
     //display creator names, and menu options, still to complete
     //follow same process as the display of game name
     //position options in the middle under game name
