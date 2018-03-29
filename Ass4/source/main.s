@@ -8,9 +8,10 @@ main:
 	ldr 		r0, =frameBufferInfo 	@ frame buffer information structure
 	bl		initFbInfo
 
-    bl init_SNES
+    //bl init_SNES
 
-    bl      mainMenu
+    //bl      mainMenu
+		bl PauseMenu
 
 
 	@ stop

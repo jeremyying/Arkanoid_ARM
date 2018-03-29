@@ -18,8 +18,6 @@ waitLoop:
     beq     waitLoop
 
 
-
-
 ldrb    r2, [r0, #8]    //check A button, index button #-1
     cmp     r2, #0
     beq     pickOption //A is pressed
@@ -148,12 +146,11 @@ MainMenuSelectionPrint:
     str r1, [r0, #16]
     bl drawImage
 
-/*
 MainMenuArrowPrint:
     ldr r0, =drawArgs
     ldr r1, =arrow
     str r1, [r0]
-    mov r1, #759 //x coord
+    mov r1, #744 //x coord (759 base)
     str r1, [r0, #4]
     mov r1, #678 //y coord
     str r1, [r0, #8]
@@ -161,7 +158,7 @@ MainMenuArrowPrint:
     str r1, [r0, #12]
     mov r1, #45 //image height
     str r1, [r0, #16]
-    bl drawImage*/
+    bl drawImage
 
 
     //display creator names, and menu options, still to complete
