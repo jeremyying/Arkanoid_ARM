@@ -1,4 +1,3 @@
-.global PauseMenuPrint
 //PauseMenuPrint draws the pause menu and arrow
 PauseMenuPrint:
   push {lr}
@@ -36,7 +35,10 @@ PauseArrowPrint:
       3 - Resume game */
 .global PauseMenuButtonCheck
 PauseMenuButtonCheck:
-  push {r4, r5, r10, lr}
+  push {r4-r8, r10, lr}
+
+  bl PauseMenuPrint //prints PauseMenu and arrow
+
   ArrowPosition .req r10
   mov ArrowPosition, #1
 
@@ -49,7 +51,7 @@ PauseMenuLoop:
   ldrb r2, [r0, #3] //check if START is pressed
   cmp r2, #0
   moveq ArrowPosition, #3 //Exit Pause Menu flag
-  beq  PauseMenuReturn
+  beq  DrawFloorBack
 
   ldrb r2, [r0, #4] //check if UP is pressed
   cmp r2, #0
@@ -61,7 +63,7 @@ PauseMenuLoop:
 
   ldrb r2, [r0, #8] //check if A is pressed
   cmp r2, #0
-  beq PauseMenuReturn //A is pressed when Arrow is on Restart
+  beq DrawFloorBack //A is pressed when Arrow is on Restart
 
   b PauseMenuLoop //check for button presses
 
@@ -98,7 +100,35 @@ PauseMenuDrawArrow:
   bl drawImage
   b PauseMenuLoop
 
+PauseMenuDrawFloor:
+  mov r4, #656 //starting x coord
+  mov r5, #344 //starting y coord
+  mov r6, #0 //block counter
+  mov r7, #1168 //maximum x coord
+  mov r8, #96 //tiles to make
+
+PauseMenuDrawFloorLoop:
+  ldr r0, =drawArgs
+  ldr r1, =fTile //floor tile address
+  str r1, [r0]
+  mov r1, r4 //x coord of PauseArrow
+  str r1, [r0, #4]
+  mov r1, r5 //y coord of PauseArrow
+  str r1, [r0, #8]
+  mov r1, #36 //image width
+  str r1, [r0, #12]
+  mov r1, #45 //image height
+  str r1, [r0, #16]
+  bl drawImage
+  add r4, #64 //increment x by a block width
+  teq r4, r7 //check if x coord of block has surpassed maximum
+  moveq r4, #656 //reset x coord to starting x coord
+  addeq r5, #32 //increment y by block height
+  add r6, #1 //increment loop counter
+  cmp r6, r8
+  bne PauseMenuDrawFloorLoop
+
 PauseMenuReturn:
   mov r0, ArrowPosition //return int 1 (Restart), 2 (Quit), or 3 (Resume)
   .unreq ArrowPosition
-  pop {r4, r5, r10, pc} //return
+  pop {r4-r8, r10, pc} //return
