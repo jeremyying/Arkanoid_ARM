@@ -36,7 +36,7 @@ PauseArrowPrint:
       3 - Resume game */
 .global PauseMenuButtonCheck
 PauseMenuButtonCheck:
-  push {r10, lr}
+  push {r4, r5, r10, lr}
   ArrowPosition .req r10
   mov ArrowPosition, #1
 
@@ -67,23 +67,29 @@ PauseMenuLoop:
 
 PauseMenuArrowUP:
   mov ArrowPosition, #1 //Arrow Position at Restart
-  mov r2, #784 // x coord at Restart
-  mov r3, #504 // y coord at Restart
-  b PauseMenuDrawArrow
+  mov r4, #784 // x coord at Restart
+  mov r5, #504 // y coord at Restart
+  b PauseMenuRemoveArrow
 
 PauseMenuArrowDOWN:
   mov ArrowPosition, #2 //Arrow Position at Quit
-  mov r2, #784 // x coord at Quit
-  mov r3, #590 // y coord at Quit
-  b PauseMenuDrawArrow
+  mov r4, #784 // x coord at Quit
+  mov r5, #590 // y coord at Quit
+  b PauseMenuRemoveArrow
+
+PauseMenuRemoveArrow:
+  mov r0, #784 //x coord to blackout
+  mov r1, #504 //y coord to blackout
+  mov r2, #35 //width
+  mov r3, #90 //height
 
 PauseMenuDrawArrow:
   ldr r0, =drawArgs
   ldr r1, =arrow
   str r1, [r0]
-  mov r1, r2 //x coord of PauseArrow
+  mov r1, r4 //x coord of PauseArrow
   str r1, [r0, #4]
-  mov r1, r3 //y coord of PauseArrow
+  mov r1, r5 //y coord of PauseArrow
   str r1, [r0, #8]
   mov r1, #36 //image width
   str r1, [r0, #12]
@@ -95,4 +101,4 @@ PauseMenuDrawArrow:
 PauseMenuReturn:
   mov r0, ArrowPosition //return int 1 (Restart), 2 (Quit), or 3 (Resume)
   .unreq ArrowPosition
-  pop {r10, pc} //return
+  pop {r4, r5, r10, pc} //return
