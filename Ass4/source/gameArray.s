@@ -10,8 +10,8 @@ init_Array:
     mov     r1, #336        //x coordinate of tile
     mov     r2, #88         //y coordinate
     mov     r3, #0          //hardness
-    mov     r4, #0
-    mov     r5, #1488
+    mov     r4, #0          //number of elements stored
+    mov     r5, #1488       //x right boundary
 
 topFloor:
     str     r1, [r0], #4
@@ -87,8 +87,7 @@ bottFloor:
 
     pop     {r4-r7}
     mov     pc, lr
-
-
+
 @ Data section
 .section .data
 

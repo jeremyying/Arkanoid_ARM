@@ -94,7 +94,7 @@ drawText:
 	mask		.req	r8
 
 	ldr		chAdr, =font		@ load the address of the font map
-	mov		r0, #'B'		@ load the character into r0
+	mov		r0, #'9'		@ load the character into r0
 	add		chAdr,	r0, lsl #4	@ char address = font base + (char * 16)
 
 	mov		py, #200		@ init the Y coordinate (pixel coordinate)
