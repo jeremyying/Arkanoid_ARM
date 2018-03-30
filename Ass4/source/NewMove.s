@@ -39,7 +39,7 @@ moveBall:
     bge     drawBFloor
     mov     r1, #184
     cmp     r4, r1
-    bge     nextCo
+    bge     brickCo
     bl      drawBFTile
     bl      checkBound
     b       drawBall
