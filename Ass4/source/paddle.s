@@ -2,18 +2,7 @@
 @ Code section
 .section .text
 
-//------
-//action: Main game Loop
-.global action
-action:
-    push    {r4-r8, lr}
-
-    bl      initPaddle
-    bl      initBall
-
-    pop     {r4-r8, pc}
-
-
+.global initPaddle
 initPaddle:
     push    {lr}
 
@@ -35,6 +24,7 @@ initPaddle:
 
     pop     {pc}
 
+.global initBall
 initBall:
     push    {lr}
 
@@ -53,6 +43,10 @@ initBall:
     mov     r1, #24                 //image height
     str     r1, [r0, #16]
     bl      drawImage
+
+    ldr r3, =attached
+    mov r1, #1
+    str r1, [r3]
 
     pop     {pc}
 
@@ -78,10 +72,15 @@ paddleStats:
 attached:
     .int    0       //flag for ball attached to paddle
 
-.global win
-win:
-    .int    0
+.global stickyPack
+stickyPack:
+    .int    0       //active
+    .int    0       //moves left
 
-.global lose
-lose:
-    .int    0
+.global destroyed
+destroyed:
+    .int    0       //current number of bricks destroyed
+
+.global lives
+lives:
+    .int    3 //number of lives (3 to start)
