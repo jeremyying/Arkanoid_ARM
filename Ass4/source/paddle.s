@@ -44,6 +44,10 @@ initBall:
     str     r1, [r0, #16]
     bl      drawImage
 
+    ldr r3, =attached
+    mov r1, #1
+    str r1, [r3]
+
     pop     {pc}
 
 
