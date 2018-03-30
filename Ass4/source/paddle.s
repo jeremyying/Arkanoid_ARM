@@ -2,6 +2,17 @@
 @ Code section
 .section .text
 
+//------
+//action: Main game Loop
+.global action
+action:
+    push    {r4-r8, lr}
+
+    bl      initPaddle
+    bl      initBall
+
+    pop     {r4-r8, pc}
+
 .global initPaddle
 initPaddle:
     push    {lr}
@@ -45,7 +56,7 @@ initBall:
     bl      drawImage
 
     ldr r3, =attached
-    mov r1, #1
+    mov r1, #0
     str r1, [r3]
 
     pop     {pc}
@@ -65,8 +76,8 @@ ballStats:
 .global paddleStats
 paddleStats:
     .int    0       //x coordinate
-    .int    0       //y coordinate
     .int    0       //x speed
+    .int    0       //extended paddle on
 
 .global attached
 attached:
@@ -83,4 +94,9 @@ destroyed:
 
 .global lives
 lives:
-    .int    3 //number of lives (3 to start)
+    .int    5
+
+
+
+
+
