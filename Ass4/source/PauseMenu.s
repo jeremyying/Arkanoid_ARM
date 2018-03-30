@@ -35,7 +35,7 @@ PauseArrowPrint:
       3 - Resume game */
 .global PauseMenuButtonCheck
 PauseMenuButtonCheck:
-  push {r4-r8, r10, lr}
+  push {r4-r10, lr}
 
   bl PauseMenuPrint //prints PauseMenu and arrow
 
@@ -82,8 +82,21 @@ PauseMenuArrowDOWN:
 PauseMenuRemoveArrow:
   mov r0, #784 //x coord to blackout
   mov r1, #504 //y coord to blackout
-  mov r2, #35 //width
-  mov r3, #90 //height
+  mov r2, #0xFF000000 //colour black
+  mov r6, #819 //max x
+  mov r7, #594 //max y
+  //mov r6, #35 //width
+  //mov r7, #90 //height
+PauseMenuRemoveArrowLoop:
+  bl DrawPixel
+  add r0, #1 //increment x
+  teq r0, r6
+  moveq r0, #784 //reset to original x
+  addeq r1, #1 //increment y
+  cmp r1, r7
+  blt PauseMenuRemoveArrowLoop
+
+
 
 PauseMenuDrawArrow:
   ldr r0, =drawArgs
@@ -103,9 +116,10 @@ PauseMenuDrawArrow:
 PauseMenuDrawFloor:
   mov r4, #656 //starting x coord
   mov r5, #344 //starting y coord
-  mov r6, #0 //block counter
-  mov r7, #1168 //maximum x coord
-  mov r8, #96 //tiles to make
+  //mov r6, #0 //block counter
+  mov r6, #1168 //max x
+  mov r7, #728 //maximum y coord
+  //mov r8, #96 //tiles to make
 
 PauseMenuDrawFloorLoop:
   ldr r0, =drawArgs
@@ -115,20 +129,19 @@ PauseMenuDrawFloorLoop:
   str r1, [r0, #4]
   mov r1, r5 //y coord of PauseArrow
   str r1, [r0, #8]
-  mov r1, #36 //image width
+  mov r1, #64 //image width
   str r1, [r0, #12]
-  mov r1, #45 //image height
+  mov r1, #32 //image height
   str r1, [r0, #16]
   bl drawImage
   add r4, #64 //increment x by a block width
-  teq r4, r7 //check if x coord of block has surpassed maximum
+  teq r4, r6 //check if x coord of block has surpassed maximum
   moveq r4, #656 //reset x coord to starting x coord
   addeq r5, #32 //increment y by block height
-  add r6, #1 //increment loop counter
-  cmp r6, r8
+  cmp r5, r7
   bne PauseMenuDrawFloorLoop
 
 PauseMenuReturn:
   mov r0, ArrowPosition //return int 1 (Restart), 2 (Quit), or 3 (Resume)
   .unreq ArrowPosition
-  pop {r4-r8, r10, pc} //return
+  pop {r4-r10, pc} //return
