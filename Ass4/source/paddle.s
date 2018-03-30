@@ -2,18 +2,7 @@
 @ Code section
 .section .text
 
-//------
-//action: Main game Loop
-.global action
-action:
-    push    {r4-r8, lr}
-
-    bl      initPaddle
-    bl      initBall
-
-    pop     {r4-r8, pc}
-
-
+.global initPaddle
 initPaddle:
     push    {lr}
 
@@ -35,6 +24,7 @@ initPaddle:
 
     pop     {pc}
 
+.global initBall
 initBall:
     push    {lr}
 
@@ -85,8 +75,3 @@ win:
 .global lose
 lose:
     .int    0
-
-
-
-
-
