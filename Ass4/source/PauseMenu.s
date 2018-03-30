@@ -20,7 +20,7 @@ PauseArrowPrint:
   str r1, [r0]
   mov r1, #784 //x coord of PauseArrow
   str r1, [r0, #4]
-  mov r1, #504 //y coord of PauseArrow
+  mov r1, #515 //y coord of PauseArrow
   str r1, [r0, #8]
   mov r1, #36 //image width
   str r1, [r0, #12]
@@ -70,7 +70,7 @@ PauseMenuLoop:
 PauseMenuArrowUP:
   mov ArrowPosition, #1 //Arrow Position at Restart
   mov r4, #784 // x coord at Restart
-  mov r5, #504 // y coord at Restart
+  mov r5, #515 // y coord at Restart
   b PauseMenuRemoveArrow
 
 PauseMenuArrowDOWN:
@@ -80,21 +80,35 @@ PauseMenuArrowDOWN:
   b PauseMenuRemoveArrow
 
 PauseMenuRemoveArrow:
-  mov r0, #784 //x coord to blackout
-  mov r1, #504 //y coord to blackout
+/*  mov r0, #784 //x coord to blackout
+  mov r1, #515 //y coord to blackout
   mov r2, #0xFF000000 //colour black
   mov r6, #819 //max x
   mov r7, #594 //max y
-  //mov r6, #35 //width
+  //mov r6, #36 //width
   //mov r7, #90 //height
 PauseMenuRemoveArrowLoop:
+  mov r2, #0xFF000000 //colour black
   bl DrawPixel
   add r0, #1 //increment x
   teq r0, r6
   moveq r0, #784 //reset to original x
   addeq r1, #1 //increment y
   cmp r1, r7
-  blt PauseMenuRemoveArrowLoop
+  blt PauseMenuRemoveArrowLoop*/
+
+  ldr r0, =drawArgs
+  ldr r1, =BlackoutAllArrow
+  str r1, [r0]
+  mov r1, #784 //x coord of PauseArrow
+  str r1, [r0, #4]
+  mov r1, #515 //y coord of PauseArrow
+  str r1, [r0, #8]
+  mov r1, #36 //image width
+  str r1, [r0, #12]
+  mov r1, #120 //image height
+  str r1, [r0, #16]
+  bl drawImage
 
 PauseMenuDrawArrow:
   ldr r0, =drawArgs

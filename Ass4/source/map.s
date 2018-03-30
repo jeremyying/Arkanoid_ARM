@@ -37,7 +37,7 @@ play:
 
   bl      Read_SNES
 
-  bl moveBall
+  //bl moveBall
 
   mov     r2, #0xffff     //no buttons pressed
   cmp     r1, r2
@@ -73,7 +73,7 @@ DetachBall:
 
   mov r3, #0
   str r3, [r4] //set Attach to 0
-  bl moveBall
+  //bl moveBall
 
 //INSERT BULLSHIT
 
