@@ -36,6 +36,12 @@ pickOption:
 
 startGame:
     bl      gameMap         //start game
+/*gameMap consists of the core gameplay loop that takes user input and manipulates the ball
+or paddle accordingly. It returns an int in r0 that acts as a flag:
+    0 - Main Menu
+    1 - Restart game
+    2 - Resume gameplay */
+
     cmp     r0, #1
     beq     startGame       //restart game, from pause menu
     b       menu

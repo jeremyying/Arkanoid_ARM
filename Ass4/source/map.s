@@ -2,9 +2,14 @@
 @ Code section
 .section .text
 
+/*gameMap consists of the core gameplay loop that takes user input and manipulates the ball
+ or paddle accordingly. It returns an int in r0 that acts as a flag:
+      0 - Main Menu
+      1 - Restart game
+      2 - Resume gameplay */
 .global gameMap
 gameMap:
-    push    {r4, r10, lr}
+    push    {r4-r10, lr}
 
     bl      init_Array //Create Bricks
 
@@ -18,7 +23,17 @@ gameMap:
 
 //Main game loop
 //Exit Main if Win, Lose, PauseMenu
+  ldr r8, =destroyed
+  ldr r9, =lives
 play:
+  ldr r6, [r8]
+  cmp r6, #72 //check if all blocks destroyed
+  beq WinGame
+
+  ldr r7, [r9]
+  cmp r7, #0 //check if lives are 0
+  beq LoseGame
+
   bl      Read_SNES
 
   bl moveBall
@@ -59,7 +74,7 @@ DetachBall:
   str r3, [r4] //set Attach to 0
   bl moveBall
 
-INSERT BULLSHIT
+//INSERT BULLSHIT
 
   b play
 
@@ -80,7 +95,19 @@ RPaddleMove:
   str r1, [r0] //store paddlespeed in paddleStats
   b play
 
+WinGame:
+  //print win screen, go back to main menu
+  mov r0, #0 //set 0 to go back to main
 
+  .unreq APressed
+  pop     {r4-r10, pc} //ret
+
+LoseGame:
+  //print lose screen, go back to main menu
+  mov r0, #0 //set 0 to go back to main
+
+  .unreq APressed
+  pop     {r4-r10, pc} //ret
 
 PauseMenuTrigger:
   bl PauseMenuButtonCheck
@@ -90,10 +117,20 @@ PauseMenuTrigger:
         3 - Resume game */
 
     //need to return argument in r0 for restarting game or quitting to go to main menu
+  cmp r0, #1 //set ret to Restart Game
+  beq ReturnPauseMenuTrigger
 
+  cmp r0, #2
+  moveq r0, #0 //set ret to Main Menu
+  beq ReturnPauseMenuTrigger
 
+  cmp r0, #3
+  moveq r0, #2 //set ret to Resume Game
+  beq ReturnPauseMenuTrigger
+ReturnPauseMenuTrigger:
   .unreq APressed
-  pop     {r4, r10, pc}
+  pop     {r4-r10, pc}
+
 
 initMap:
     push    {r4-r8, lr}

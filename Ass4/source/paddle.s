@@ -72,14 +72,6 @@ paddleStats:
 attached:
     .int    0       //flag for ball attached to paddle
 
-.global win
-win:
-    .int    0
-
-.global lose
-lose:
-    .int    0
-
 .global stickyPack
 stickyPack:
     .int    0       //active
@@ -91,4 +83,4 @@ destroyed:
 
 .global lives
 lives:
-    .int    0
+    .int    3 //number of lives (3 to start)
