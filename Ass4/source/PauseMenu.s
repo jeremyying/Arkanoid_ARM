@@ -80,35 +80,23 @@ PauseMenuArrowDOWN:
   b PauseMenuRemoveArrow
 
 PauseMenuRemoveArrow:
-/*  mov r0, #784 //x coord to blackout
-  mov r1, #515 //y coord to blackout
-  mov r2, #0xFF000000 //colour black
-  mov r6, #819 //max x
-  mov r7, #594 //max y
-  //mov r6, #36 //width
-  //mov r7, #90 //height
-PauseMenuRemoveArrowLoop:
-  mov r2, #0xFF000000 //colour black
-  bl DrawPixel
-  add r0, #1 //increment x
-  teq r0, r6
-  moveq r0, #784 //reset to original x
-  addeq r1, #1 //increment y
-  cmp r1, r7
-  blt PauseMenuRemoveArrowLoop*/
+  mov     r6, #784 //x value
+  mov     r7, #515 //yvalue
+  mov     r8, #820 //max x
+  mov     r9, #635 //max y
 
-  ldr r0, =drawArgs
-  ldr r1, =BlackoutAllArrow
-  str r1, [r0]
-  mov r1, #784 //x coord of PauseArrow
-  str r1, [r0, #4]
-  mov r1, #515 //y coord of PauseArrow
-  str r1, [r0, #8]
-  mov r1, #36 //image width
-  str r1, [r0, #12]
-  mov r1, #120 //image height
-  str r1, [r0, #16]
-  bl drawImage
+PauseMenuRemoveArrowLoop:
+  mov     r0, r6
+  mov     r1, r7
+  mov     r2, #0xFF000000
+  bl      DrawPixel
+  add     r6, #1
+  teq     r6, r8
+  moveq   r6, #784
+  addeq   r7, #1
+  cmp     r7, r9
+  blt     PauseMenuRemoveArrowLoop
+
 
 PauseMenuDrawArrow:
   ldr r0, =drawArgs
@@ -128,10 +116,8 @@ PauseMenuDrawArrow:
 PauseMenuDrawFloor:
   mov r4, #656 //starting x coord
   mov r5, #344 //starting y coord
-  //mov r6, #0 //block counter
   mov r6, #1168 //max x
   mov r7, #728 //maximum y coord
-  //mov r8, #96 //tiles to make
 
 PauseMenuDrawFloorLoop:
   ldr r0, =drawArgs
