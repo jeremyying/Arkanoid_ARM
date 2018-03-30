@@ -51,7 +51,7 @@ PauseMenuLoop:
   ldrb r2, [r0, #3] //check if START is pressed
   cmp r2, #0
   moveq ArrowPosition, #3 //Exit Pause Menu flag
-  beq  DrawFloorBack
+  beq  PauseMenuDrawFloor
 
   ldrb r2, [r0, #4] //check if UP is pressed
   cmp r2, #0
@@ -63,7 +63,7 @@ PauseMenuLoop:
 
   ldrb r2, [r0, #8] //check if A is pressed
   cmp r2, #0
-  beq DrawFloorBack //A is pressed when Arrow is on Restart
+  beq PauseMenuDrawFloor //A is pressed when Arrow is on Restart
 
   b PauseMenuLoop //check for button presses
 
@@ -95,8 +95,6 @@ PauseMenuRemoveArrowLoop:
   addeq r1, #1 //increment y
   cmp r1, r7
   blt PauseMenuRemoveArrowLoop
-
-
 
 PauseMenuDrawArrow:
   ldr r0, =drawArgs

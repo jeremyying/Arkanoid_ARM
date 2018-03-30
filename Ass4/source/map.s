@@ -18,6 +18,7 @@ gameMap:
     bl      initBall
 
     APressed .req r10
+    mov APressed, #0
 
 
 
@@ -99,14 +100,14 @@ WinGame:
   //print win screen, go back to main menu
   mov r0, #0 //set 0 to go back to main
 
-  .unreq APressed
+
   pop     {r4-r10, pc} //ret
 
 LoseGame:
   //print lose screen, go back to main menu
   mov r0, #0 //set 0 to go back to main
 
-  .unreq APressed
+
   pop     {r4-r10, pc} //ret
 
 PauseMenuTrigger:
@@ -128,7 +129,8 @@ PauseMenuTrigger:
   moveq r0, #2 //set ret to Resume Game
   beq ReturnPauseMenuTrigger
 ReturnPauseMenuTrigger:
-  .unreq APressed
+
+
   pop     {r4-r10, pc}
 
 
