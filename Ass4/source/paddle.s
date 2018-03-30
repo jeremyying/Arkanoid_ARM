@@ -26,7 +26,7 @@ initPaddle:
     str     r1, [r2]
     mov     r1, #920                    //y coordinate
     str     r1, [r0, #8]
-    str     r1, [r2, #4]
+
     mov     r1, #128                //image width
     str     r1, [r0, #12]
     mov     r1, #32                 //image height
@@ -95,8 +95,3 @@ destroyed:
 .global lives
 lives:
     .int    5
-
-
-
-
-
