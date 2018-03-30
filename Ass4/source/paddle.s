@@ -79,3 +79,16 @@ win:
 .global lose
 lose:
     .int    0
+
+.global stickyPack
+stickyPack:
+    .int    0       //active
+    .int    0       //moves left
+
+.global destroyed
+destroyed:
+    .int    0       //current number of bricks destroyed
+
+.global lives
+lives:
+    .int    0
