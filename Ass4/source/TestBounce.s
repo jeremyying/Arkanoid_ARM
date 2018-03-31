@@ -156,30 +156,7 @@ moveBall:
   add r7, r9 //y + y speed
   str r7, [r10, #4]
 
-  push {r4-r10}
-  BlackBallOut:
-    mov r8, r6 //initial x
-    mov r9, r7 //initial y
-    mov r4, r6 //copy x coord
-    add r4, #24 //max x of draw
-    mov r5, r7 //copy y coord
-    add r5, #24 //max y of draw
-
-  BlackBallOutLoop:
-    mov     r0, r8
-    mov     r1, r9
-    mov     r2, #0xFF000000
-    bl      DrawPixel
-    add     r8, #1
-    teq     r8, r4
-    moveq   r8, r6
-    addeq   r9, #1
-    cmp     r9, r5
-    blt     BlackBallOutLoop
-  pop {r4-r10}
-
-
-
+  bl BlackBallOut
 
   ldr     r0, =drawArgs
   ldr     r1, =ball             //image ascii text address
@@ -243,6 +220,31 @@ Reflection:
   ReflectionDone:
   pop {r4-r10, pc}
 
+.global BlackBallOut
+BlackBallOut:
+  push {r4-r10, lr}
+  ldr r10, =ballStats
+  ldr r4, [r10] //x
+  mov r4, r8
+  ldr r5, [r10, #4] //y
+  mov r6, r4
+  add r6, #24 //max x
+  mov r7, r5
+  add r7, #24 //max y
+
+
+  BlackBallOutLoop:
+    mov     r0, r4
+    mov     r1, r5
+    mov     r2, #0xFF000000
+    bl      DrawPixel
+    add     r4, #1
+    teq     r4, r6
+    moveq   r4, r8
+    addeq   r5, #1
+    cmp     r5, r7
+    blt     BlackBallOutLoop
+  pop {r4-r10, pc}
 
 .global TestBounce
 TestBounce:
@@ -256,6 +258,9 @@ TestBounce:
 
     bl moveBall
     bl Reflection
+
+    ldr r0, =#100000
+    bl delayMicroseconds
 
     b TestBounceLoop
 
