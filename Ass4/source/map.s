@@ -124,13 +124,79 @@ continue:
     b       play
 
 WinGame:
-    mov     r0, #2
-    // need to print win message
+    mov     r0, #2 //set flag to return to main
+
+    push {r0}
+    mov     r4, #0
+    mov     r5, #24
+    mov     r6, #1824
+    mov     r7, #984
+
+WinGameLoop:
+    mov     r0, r4
+    mov     r1, r5
+    mov     r2, #0xFF000000
+    bl      DrawPixel
+    add     r4, #1
+    teq     r4, r6
+    moveq   r4, #0
+    addeq   r5, #1
+    cmp     r5, r7
+    blt     WinGameLoop
+
+    ldr     r0, =drawArgs
+    ldr     r1, =WinImage
+    str     r1, [r0]
+    mov     r1, #760 		//x coord
+    str     r1, [r0, #4]
+    mov     r1, #416 		//y coord
+    str     r1, [r0, #8]
+    mov     r1, #304 		//image width
+    str     r1, [r0, #12]
+    mov     r1, #152 		//image height
+    str     r1, [r0, #16]
+    bl      drawImage
+
+    pop {r0}
+
     b       endPlay
 
 LoseGame:
-    mov     r0, #2
-    // need to print lose message
+    mov     r0, #2 //set flag to return to main
+
+    push {r0}
+    mov     r4, #0
+    mov     r5, #24
+    mov     r6, #1824
+    mov     r7, #984
+
+LoseGameLoop:
+    mov     r0, r4
+    mov     r1, r5
+    mov     r2, #0xFF000000
+    bl      DrawPixel
+    add     r4, #1
+    teq     r4, r6
+    moveq   r4, #0
+    addeq   r5, #1
+    cmp     r5, r7
+    blt     LoseGameLoop
+
+    ldr     r0, =drawArgs
+    ldr     r1, =WinImage
+    str     r1, [r0]
+    mov     r1, #760 		//x coord
+    str     r1, [r0, #4]
+    mov     r1, #416 		//y coord
+    str     r1, [r0, #8]
+    mov     r1, #304 		//image width
+    str     r1, [r0, #12]
+    mov     r1, #152 		//image height
+    str     r1, [r0, #16]
+    bl      drawImage
+
+    pop {r0}
+
     b       endPlay
 
 endPlay:
