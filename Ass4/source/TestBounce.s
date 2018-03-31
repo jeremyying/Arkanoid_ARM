@@ -112,9 +112,11 @@ initBall:
   str     r1, [r0]
   mov     r1, #900                   //x coordinate
   str     r1, [r0, #4]
+  mov r1, #900
   str     r1, [r2]
   mov     r1, #896                    //y coordinate
   str     r1, [r0, #8]
+  mov r1, #896
   str     r1, [r2, #4]
   mov     r1, #24                //image width
   str     r1, [r0, #12]
