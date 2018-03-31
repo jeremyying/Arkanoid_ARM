@@ -8,7 +8,7 @@ mainMenu:
 
 menu:
     bl      displayMenu
-    mov     r4, #0
+    mov     r4, #0 //arrow starts at Start
 
 waitLoop:
     bl      Read_SNES
@@ -21,6 +21,7 @@ waitLoop:
     beq     pickOption
     ldrb    r2, [r0, #4]    //check UP button
     cmp     r2, #0
+    moveq r4, #0
     beq     drawArrow      //display arrow on start
     ldrb    r2, [r0, #5]    //check DOWN button
     cmp     r2, #0
@@ -29,20 +30,26 @@ waitLoop:
     b       waitLoop
 
 pickOption:
-    cmp     r4, #1
+    cmp     r4, #1 //check if A is pressed when arrow is on Quit
     beq     endMenu
 
 startGame:
     bl      gameMap         //start game
+    /*gameMap returns an int in r0:
+
+          1 - Restart game
+          2 - Main Menu */
+
     cmp     r0, #1
     beq     startGame       //restart game, from pause menu
-    b       menu
+    cmp r0, #2
+    beq       menu
 
 drawArrow:
     mov     r5, #744        //x coordinate to blackout
     mov     r6, #678        //y coordinate to blackout
-    mov     r7, #36         //width
-    mov     r8, #120        //height
+    mov     r7, #780         //max x
+    mov     r8, #783        //max y
 
 blackout:
     mov     r0, r5
@@ -51,12 +58,12 @@ blackout:
     bl      DrawPixel
     add     r5, #1
     teq     r5, r7
-    moveq   r5, #0
+    moveq   r5, #744
     addeq   r6, #1
     cmp     r6, r8
     blt     blackout
 
-    cmp     r4, #1
+    cmp     r4, #1  //Check if Arrow on quit
     moveq   r5, #744		//x coordinate of arrow on quit
     moveq   r6, #738        	//y coordinate of arrow on quit
     movne   r5, #744        	//x coordinate of arrow on start
@@ -77,7 +84,24 @@ blackout:
     b       waitLoop
 
 endMenu:
-    pop     {r4-r8, pc}
+    mov     r4, #0
+    mov     r5, #24
+    mov     r6, #1824
+    mov     r7, #984
+
+endMenuLoop:
+    mov     r0, r4
+    mov     r1, r5
+    mov     r2, #0xFF000000
+    bl      DrawPixel
+    add     r4, #1
+    teq     r4, r6
+    moveq   r4, #0
+    addeq   r5, #1
+    cmp     r5, r7
+    blt     endMenuLoop
+
+    pop     {r4-r8, pc} //ret
 
 .global displayMenu
 displayMenu:
@@ -206,6 +230,8 @@ MainMenuArrowPrint:
       bl Read_SNES
       mov r2, #0xffff //no buttons are pressed
       cmp r1, r2
+
+
       beq PauseMenuLoop
 
       ldrb r2, [r0, #3] //check if START is pressed
