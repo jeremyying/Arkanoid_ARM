@@ -123,12 +123,40 @@ WinGame:
     push {r0}
     mov     r0, #2
     // need to print win message
+
+    ldr     r0, =drawArgs
+    ldr     r1, =WinImage
+    str     r1, [r0]
+    mov     r1, #760 		//x coord
+    str     r1, [r0, #4]
+    mov     r1, #416 		//y coord
+    str     r1, [r0, #8]
+    mov     r1, #304 		//image width
+    str     r1, [r0, #12]
+    mov     r1, #152 		//image height
+    str     r1, [r0, #16]
+    bl      drawImage
+
     b       PressToReturn
 
 LoseGame:
     push {r0}
     mov     r0, #2
     // need to print lose message
+
+    ldr     r0, =drawArgs
+    ldr     r1, =LoseImage
+    str     r1, [r0]
+    mov     r1, #760 		//x coord
+    str     r1, [r0, #4]
+    mov     r1, #416 		//y coord
+    str     r1, [r0, #8]
+    mov     r1, #304 		//image width
+    str     r1, [r0, #12]
+    mov     r1, #152 		//image height
+    str     r1, [r0, #16]
+    bl      drawImage
+
     b PressToReturn
 
 PressToReturn:
