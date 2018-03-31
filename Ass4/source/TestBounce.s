@@ -127,6 +127,7 @@ initBall:
 
   pop {r4-r10, pc}
 
+/*
 .global initSpeed
 initSpeed:
   push {r4-r10, lr}
@@ -215,19 +216,20 @@ Reflection:
   ReflectionDone:
   pop {r4-r10, pc}
 
+*/
 .global TestBounce
 TestBounce:
   push {r4-r10, lr}
 
   bl DrawBounds
   bl initBall
-  bl initSpeed
+  /*bl initSpeed
 
   TestBounceLoop:
 
     bl moveBall
     bl Reflection
 
-    b TestBounceLoop
+    b TestBounceLoop*/
 
   push {r4-r10, lr}
