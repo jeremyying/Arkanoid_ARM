@@ -16,7 +16,7 @@ gameMap:
 
     mov     APressed, #0
     mov     sticky, #0
-    
+
 
 play:
 
@@ -31,7 +31,7 @@ play:
     ldr     r0, =lives
     ldr     r1, [r0]
     cmp     r1, #0 		//check if lives are 0
-    beq     LoseGame 
+    beq     LoseGame
 
     bl      Read_SNES
     mov     r2, #0xffff     	//no buttons pressed
@@ -56,11 +56,11 @@ play:
 
     ldrb    r2, [r0, #6]
     cmp     r2, #0 		//check if LEFT is pressed
-    beq     LPaddleMove  
+    beq     LPaddleMove
 
     ldrb    r2, [r0, #7]
     cmp     r2, #0 		//check if RIGHT is pressed
-    beq     RPaddleMove  
+    beq     RPaddleMove
 
 DetachBall:
     ldr     r0, =attached
@@ -78,19 +78,19 @@ DetachBall:
     b       continue
 
 LPaddleMove:
-  
+
     ldr     r0, =paddleStats
     cmp     APressed, #1
     moveq   r1, #-2 		//A is pressed, speed paddle up
     movne   r1, #-1 		//negative paddle speed
 
     moveq   APressed, #0
-    
+
     str     r1, [r0, #4] 		//store paddlespeed in paddleStats
     b       continue
 
 RPaddleMove:
-  
+
     ldr     r0, =paddleStats
     cmp     APressed, #1
     moveq   r1, #2 		//A is pressed, speed paddle up
@@ -98,7 +98,7 @@ RPaddleMove:
     moveq   APressed, #0
     str     r1, [r0, #4] 		//store paddlespeed in paddleStats
     b       continue
-         
+
 PauseMenuTrigger:
     bl      PauseMenuButtonCheck
 
@@ -120,13 +120,24 @@ continue:
     b       play
 
 WinGame:
+    push {r0}
     mov     r0, #2
     // need to print win message
-    b       endPlay
+    b       PressToReturn
 
 LoseGame:
+    push {r0}
     mov     r0, #2
     // need to print lose message
+    b PressToReturn
+
+PressToReturn:
+  bl Read_SNES
+  mov r2, #0xffff
+  cmp r1, r2
+  beq PressToReturn
+
+  pop {r0}
 
 endPlay:
     .unreq  APressed
@@ -329,4 +340,3 @@ greenBricks:
     blt     greenBricks
 
     pop     {r4-r8, pc}
-
