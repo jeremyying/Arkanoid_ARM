@@ -24,8 +24,8 @@ gameMap:
 
 play:
 
-    mov     r0, #16650
-    bl      delayMicroseconds
+    /*mov     r0, #16650
+    bl      delayMicroseconds*/
 
     ldr     r0, =destroyed
     ldr     r1, [r0]
@@ -85,8 +85,12 @@ LPaddleMove:
 
     ldr     r0, =paddleStats
     cmp     APressed, #1
-    moveq   r1, #-2 		//A is pressed, speed paddle up
-    movne   r1, #-1 		//negative paddle speed
+    //moveq   r1, #-2 		//A is pressed, negative speed paddle up
+    //movne   r1, #-1 		//negative paddle speed
+
+    moveq   r1, #-40 		//A is pressed, negative speed paddle up
+    movne   r1, #-18 		//negative paddle speed
+
     str     r1, [r0, #4] 		//store paddlespeed in paddleStats
     b       continue
 
@@ -94,8 +98,12 @@ RPaddleMove:
 
     ldr     r0, =paddleStats
     cmp     APressed, #1
-    moveq   r1, #2 		//A is pressed, speed paddle up
-    movne   r1, #1 		//negative paddle speed
+    //moveq   r1, #2 		//A is pressed, positive speed paddle up
+    //movne   r1, #1 		//positive paddle speed
+
+    moveq   r1, #40 		//A is pressed, positive speed paddle up
+    movne   r1, #18 		//positive paddle speed
+
     str     r1, [r0, #4] 		//store paddlespeed in paddleStats
     b       continue
 
