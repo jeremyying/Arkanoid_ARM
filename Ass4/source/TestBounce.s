@@ -174,10 +174,11 @@ Reflection:
   ldr r7, [r10, #4] //y
   ldr r8, [r10, #8] //x speed
   ldr r9, [r10, #12] //y speed
+  ldr r5, =#1464
 
   cmp r6, #336 //check Left Wall Collision
   ble LBound
-  cmp r6, #1464 //check Right Wall Collision
+  cmp r6, r5 //check Right Wall Collision
   bge RBound
   cmp r7, #88 //check Top Collision
   ble TBound
