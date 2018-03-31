@@ -2,6 +2,10 @@
 @ Code section
 .section .text
 
+/*gameMap returns an int in r0:
+
+      1 - Restart game
+      2 - Main Menu */
 .global gameMap
 gameMap:
     push    {r4-r10, lr}
@@ -16,7 +20,7 @@ gameMap:
 
     mov     APressed, #0
     mov     sticky, #0
-    
+
 
 play:
 
@@ -31,7 +35,7 @@ play:
     ldr     r0, =lives
     ldr     r1, [r0]
     cmp     r1, #0 		//check if lives are 0
-    beq     LoseGame 
+    beq     LoseGame
 
     bl      Read_SNES
     mov     r2, #0xffff     	//no buttons pressed
@@ -56,11 +60,11 @@ play:
 
     ldrb    r2, [r0, #6]
     cmp     r2, #0 		//check if LEFT is pressed
-    beq     LPaddleMove  
+    beq     LPaddleMove
 
     ldrb    r2, [r0, #7]
     cmp     r2, #0 		//check if RIGHT is pressed
-    beq     RPaddleMove  
+    beq     RPaddleMove
 
 DetachBall:
     ldr     r0, =attached
@@ -78,7 +82,7 @@ DetachBall:
     b       continue
 
 LPaddleMove:
-  
+
     ldr     r0, =paddleStats
     cmp     APressed, #1
     moveq   r1, #-2 		//A is pressed, speed paddle up
@@ -87,22 +91,28 @@ LPaddleMove:
     b       continue
 
 RPaddleMove:
-  
+
     ldr     r0, =paddleStats
     cmp     APressed, #1
     moveq   r1, #2 		//A is pressed, speed paddle up
     movne   r1, #1 		//negative paddle speed
     str     r1, [r0, #4] 		//store paddlespeed in paddleStats
     b       continue
-         
+
 PauseMenuTrigger:
     bl      PauseMenuButtonCheck
+    /*PauseMenuButtonCheck returns an int in r0 based on user selections made inside the pause menu:
+          1 - Restart game
+          2 - Quit game
+          3 - Resume game */
 
-    cmp	    r0, #1
+    cmp	    r0, #1 //ret Restart game flag
     beq     endPlay
-    cmp     r0, #2
-    moveq   r0, #0
+    cmp     r0, #2 //ret Main Menu flag
     beq     endPlay
+    cmp r0, #3 //Resume Game
+    beq continue //? I assume this continues the game?
+
 
 continue:
     //bl      moveBall
@@ -114,13 +124,14 @@ continue:
     b       play
 
 WinGame:
-    mov     r0, #0
+    mov     r0, #2
     // need to print win message
     b       endPlay
 
 LoseGame:
-    mov     r0, #0
+    mov     r0, #2
     // need to print lose message
+    b       endPlay
 
 endPlay:
     .unreq  APressed
@@ -323,4 +334,3 @@ greenBricks:
     blt     greenBricks
 
     pop     {r4-r8, pc}
-

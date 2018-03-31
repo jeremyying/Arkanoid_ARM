@@ -35,9 +35,15 @@ pickOption:
 
 startGame:
     bl      gameMap         //start game
+    /*gameMap returns an int in r0:
+
+          1 - Restart game
+          2 - Main Menu */
+
     cmp     r0, #1
     beq     startGame       //restart game, from pause menu
-    b       menu
+    cmp r0, #2
+    beq       menu
 
 drawArrow:
     mov     r5, #744        //x coordinate to blackout
@@ -94,20 +100,6 @@ endMenuLoop:
     addeq   r5, #1
     cmp     r5, r7
     blt     endMenuLoop
-
-
-  /*  ldr     r0, =drawArgs
-    ldr     r1, =mMenu          //image ascii text address, name of game
-    str     r1, [r0]
-    mov     r1, #546          	//x coordinate
-    str     r1, [r0, #4]
-    mov     r1, #350            //y coordinate
-    str     r1, [r0, #8]
-    mov     r1, #732            //image width
-    str     r1, [r0, #12]
-    mov     r1, #120            //image height
-    str     r1, [r0, #16]
-    bl      drawImage*/
 
     pop     {r4-r8, pc} //ret
 
@@ -238,6 +230,8 @@ MainMenuArrowPrint:
       bl Read_SNES
       mov r2, #0xffff //no buttons are pressed
       cmp r1, r2
+
+
       beq PauseMenuLoop
 
       ldrb r2, [r0, #3] //check if START is pressed
