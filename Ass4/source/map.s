@@ -2,10 +2,6 @@
 @ Code section
 .section .text
 
-/*gameMap returns an int in r0:
-
-      1 - Restart game
-      2 - Main Menu */
 .global gameMap
 gameMap:
     push    {r4-r10, lr}
@@ -20,11 +16,11 @@ gameMap:
 
     mov     APressed, #0
     mov     sticky, #0
-
+    
 
 play:
 
-    mov     r0, #16650
+    mov     r0, #5000
     bl      delayMicroseconds
 
     ldr     r0, =destroyed
@@ -35,7 +31,7 @@ play:
     ldr     r0, =lives
     ldr     r1, [r0]
     cmp     r1, #0 		//check if lives are 0
-    beq     LoseGame
+    beq     LoseGame 
 
     bl      Read_SNES
     mov     r2, #0xffff     	//no buttons pressed
@@ -60,11 +56,11 @@ play:
 
     ldrb    r2, [r0, #6]
     cmp     r2, #0 		//check if LEFT is pressed
-    beq     LPaddleMove
+    beq     LPaddleMove  
 
     ldrb    r2, [r0, #7]
     cmp     r2, #0 		//check if RIGHT is pressed
-    beq     RPaddleMove
+    beq     RPaddleMove  
 
 DetachBall:
     ldr     r0, =attached
@@ -82,36 +78,36 @@ DetachBall:
     b       continue
 
 LPaddleMove:
-
+  
     ldr     r0, =paddleStats
     cmp     APressed, #1
     moveq   r1, #-2 		//A is pressed, speed paddle up
     movne   r1, #-1 		//negative paddle speed
+
+    moveq   APressed, #0
+    
     str     r1, [r0, #4] 		//store paddlespeed in paddleStats
     b       continue
 
 RPaddleMove:
-
+  
     ldr     r0, =paddleStats
     cmp     APressed, #1
     moveq   r1, #2 		//A is pressed, speed paddle up
     movne   r1, #1 		//negative paddle speed
+    moveq   APressed, #0
     str     r1, [r0, #4] 		//store paddlespeed in paddleStats
     b       continue
-
+         
 PauseMenuTrigger:
     bl      PauseMenuButtonCheck
-    /*PauseMenuButtonCheck returns an int in r0 based on user selections made inside the pause menu:
-          1 - Restart game
-          2 - Quit game
-          3 - Resume game */
 
-    cmp	    r0, #1 //ret Restart game flag
+    cmp	    r0, #1
     beq     endPlay
-    cmp     r0, #2 //ret Main Menu flag
+    cmp     r0, #2
     beq     endPlay
-    cmp r0, #3 //Resume Game
-    beq continue //? I assume this continues the game?
+    cmp r0, #3
+    beq continue
 
 
 continue:
@@ -124,80 +120,13 @@ continue:
     b       play
 
 WinGame:
-    mov     r0, #2 //set flag to return to main
-
-    push {r0}
-    mov     r4, #0
-    mov     r5, #24
-    mov     r6, #1824
-    mov     r7, #984
-
-WinGameLoop:
-    mov     r0, r4
-    mov     r1, r5
-    mov     r2, #0xFF000000
-    bl      DrawPixel
-    add     r4, #1
-    teq     r4, r6
-    moveq   r4, #0
-    addeq   r5, #1
-    cmp     r5, r7
-    blt     WinGameLoop
-
-    ldr     r0, =drawArgs
-    ldr     r1, =WinImage
-    str     r1, [r0]
-    mov     r1, #760 		//x coord
-    str     r1, [r0, #4]
-    mov     r1, #416 		//y coord
-    str     r1, [r0, #8]
-    mov     r1, #304 		//image width
-    str     r1, [r0, #12]
-    mov     r1, #152 		//image height
-    str     r1, [r0, #16]
-    bl      drawImage
-
-    pop {r0}
-
+    mov     r0, #2
+    // need to print win message
     b       endPlay
 
 LoseGame:
-    mov     r0, #2 //set flag to return to main
-
-    push {r0}
-    mov     r4, #0
-    mov     r5, #24
-    mov     r6, #1824
-    mov     r7, #984
-
-LoseGameLoop:
-    mov     r0, r4
-    mov     r1, r5
-    mov     r2, #0xFF000000
-    bl      DrawPixel
-    add     r4, #1
-    teq     r4, r6
-    moveq   r4, #0
-    addeq   r5, #1
-    cmp     r5, r7
-    blt     LoseGameLoop
-
-    ldr     r0, =drawArgs
-    ldr     r1, =WinImage
-    str     r1, [r0]
-    mov     r1, #760 		//x coord
-    str     r1, [r0, #4]
-    mov     r1, #416 		//y coord
-    str     r1, [r0, #8]
-    mov     r1, #304 		//image width
-    str     r1, [r0, #12]
-    mov     r1, #152 		//image height
-    str     r1, [r0, #16]
-    bl      drawImage
-
-    pop {r0}
-
-    b       endPlay
+    mov     r0, #2
+    // need to print lose message
 
 endPlay:
     .unreq  APressed
@@ -400,3 +329,4 @@ greenBricks:
     blt     greenBricks
 
     pop     {r4-r8, pc}
+

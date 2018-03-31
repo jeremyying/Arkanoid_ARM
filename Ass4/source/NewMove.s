@@ -7,35 +7,41 @@ movePaddle:
     push    {r4-r8, lr}
 
     //check boundaries
-    bl      checkPaddleBound
-    mov     r4, r0
-    mov     r5, r1
-    bl      drawPaddleBack
+    
 
-    ldr     r3, =paddleStats    //load paddle stats
-    ldr     r6, [r3]            //load x coordinate
-    ldr     r7, [r3, #4]        //load speed
-    ldr     r8, [r3, #8]        //load if extended
-    cmp     r7, #0
+    ldr     r0, =paddleStats    //load paddle stats
+    ldr     r4, [r3]            //load x coordinate
+    ldr     r5, [r3, #4]        //load speed
+    ldr     r6, [r3, #8]        //load if extended
+    cmp     r5, #0
     beq     endMovePad
 
-    cmp     r4, #1
+    bl      checkPaddleBound
+  
+    cmp     r0, #1
     beq     drawPaddleLeft
-    cmp     r5, #1
+    cmp     r1, #1
     beq     drawPaddleRight
 
+    bl      drawBackFloor
+
     
-    add     r6, r7
-    str	    r6, [r3]
+    add     r4, r5
+    //ldr     r0, =check
+    //mov     r1, r6
+    //bl      printf
+
+    ldr     r0, =paddleStats
+    str	    r4, [r0]
     mov     r7, #0
-    str     r7, [r3, #4]
-    cmp     r8, #1
+    str     r7, [r0, #4]
+    cmp     r6, #1
     ldreq   r1, =exPaddle
     ldrne   r1, =paddle
 
     ldr     r0, =drawArgs
     str     r1, [r0]
-    str     r6, [r0, #4]
+    str     r4, [r0, #4]
     mov     r1, #920
     str     r1, [r0, #8]
     movne   r1, #128
@@ -47,7 +53,8 @@ movePaddle:
     b       endMovePad
 
 drawPaddleLeft:
-    cmp     r8, #1
+    bl      drawBackFloor
+    cmp     r6, #1
     ldreq   r1, =exPaddle
     ldrne   r1, =paddle
     ldr     r0, =drawArgs
@@ -56,7 +63,7 @@ drawPaddleLeft:
     str     r1, [r0, #4]
     mov     r1, #920
     str     r1, [r0, #8]
-      movne   r1, #128
+    movne   r1, #128
     moveq   r1, #192
     str     r1, [r0, #12]
     mov     r1, #32
@@ -65,7 +72,8 @@ drawPaddleLeft:
     b       endMovePad
 
 drawPaddleRight:
-    cmp     r8, #1
+    bl      drawBackFloor
+    cmp     r6, #1
     ldreq   r1, =exPaddle
     ldrne   r1, =paddle
     moveq   r2, #1296
@@ -88,7 +96,7 @@ endMovePad:
 
 .global checkPaddleBound
 checkPaddleBound:
-    push    {r4-r7}
+    push    {r4-r7, lr}
 
     ldr     r3, =paddleStats
     ldr     r4, [r3]            //load x coordinate
@@ -96,25 +104,32 @@ checkPaddleBound:
     add     r4, r4, r7          //update the ball position so we can tell if there is a colision
     ldr     r5, [r3, #8]        //load if extened
 
+    mov     r0, #0
+    mov     r1, #0
+
     mov     r6, #336
-    mov     r0, #0             //r0 = left collision boolean
     cmp     r4, r6
-    movle   r0, #1
+    movle   r0, #1		//r0 = left collision boolean
+    ble     endCheckPadBound
+    
 
     cmp     r5, #1
     moveq   r6, #1328
     movne   r6, #1360
-    mov     r1, #0              //r1 = right collision boolean
     cmp     r4, r6
-    movge   r1, #1
+    movge   r1, #1		//r1 = right collision boolean
 
-    pop     {r4-r7}
-    mov     pc, lr
+endCheckPadBound:
+
+    pop     {r4-r7, pc}
 
 
-.global drawPaddleBack
-drawPaddleBack:
-    push    {r4-r7, lr}
+//.global drawPaddleBack
+drawBackFloor:
+    push    {r4-r9, lr}
+
+    mov     r8, r0
+    mov     r9, r1
 
     ldr     r3, =paddleStats    //load paddle stats
     ldr     r4, [r3]            //load x coordinate
@@ -135,10 +150,10 @@ calcLoop:
     mov     r6, #336
     add     r4, r6
 
-    //cmp	    r0, #1
-    //beq     drawAtLeft
-    //cmp     r1, #1
-    //beq     drawAtRight
+    cmp	    r0, #1
+    beq     drawAtLeft
+    cmp     r1, #1
+    beq     drawAtRight
 
     cmp     r5, #1
     moveq   r6, #4
@@ -149,7 +164,7 @@ calcLoop:
 drawAtLeft:
     mov     r4, #336
     mov     r6, #3
-    mov     r5, #0
+    mov     r5, #0	
     b       drawBack
 
 drawAtRight:
@@ -161,6 +176,7 @@ drawAtRight:
     mov     r5, #0
 
 drawBack:
+
     ldr     r0, =drawArgs
     ldr     r1, =fTile
     str     r1, [r0]
@@ -176,9 +192,9 @@ drawBack:
     add     r4, #64
     add     r5, #1
     cmp     r5, r6
-    blt     drawBack    
+    blt     drawBack   
 
-    pop     {r4-r7, pc}
+    pop     {r4-r9, pc}
 
 
 .global moveBall

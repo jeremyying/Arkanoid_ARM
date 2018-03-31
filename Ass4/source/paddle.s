@@ -26,7 +26,6 @@ initPaddle:
     str     r1, [r2]
     mov     r1, #920                    //y coordinate
     str     r1, [r0, #8]
-
     mov     r1, #128                //image width
     str     r1, [r0, #12]
     mov     r1, #32                 //image height
@@ -55,9 +54,9 @@ initBall:
     str     r1, [r0, #16]
     bl      drawImage
 
-    ldr r3, =attached
-    mov r1, #0
-    str r1, [r3]
+    ldr     r3, =attached
+    mov     r1, #0
+    str     r1, [r3]
 
     pop     {pc}
 
@@ -95,3 +94,8 @@ destroyed:
 .global lives
 lives:
     .int    5
+
+
+
+
+

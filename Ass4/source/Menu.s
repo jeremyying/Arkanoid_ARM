@@ -8,7 +8,7 @@ mainMenu:
 
 menu:
     bl      displayMenu
-    mov     r4, #0 //arrow starts at Start
+    mov     r4, #0
 
 waitLoop:
     bl      Read_SNES
@@ -21,7 +21,7 @@ waitLoop:
     beq     pickOption
     ldrb    r2, [r0, #4]    //check UP button
     cmp     r2, #0
-    moveq r4, #0
+    moveq   r4, #0
     beq     drawArrow      //display arrow on start
     ldrb    r2, [r0, #5]    //check DOWN button
     cmp     r2, #0
@@ -30,19 +30,14 @@ waitLoop:
     b       waitLoop
 
 pickOption:
-    cmp     r4, #1 //check if A is pressed when arrow is on Quit
+    cmp     r4, #1
     beq     endMenu
 
 startGame:
     bl      gameMap         //start game
-    /*gameMap returns an int in r0:
-
-          1 - Restart game
-          2 - Main Menu */
-
     cmp     r0, #1
     beq     startGame       //restart game, from pause menu
-    cmp r0, #2
+	cmp r0, #2
     beq       menu
 
 drawArrow:
@@ -63,7 +58,7 @@ blackout:
     cmp     r6, r8
     blt     blackout
 
-    cmp     r4, #1  //Check if Arrow on quit
+    cmp     r4, #1
     moveq   r5, #744		//x coordinate of arrow on quit
     moveq   r6, #738        	//y coordinate of arrow on quit
     movne   r5, #744        	//x coordinate of arrow on start
@@ -101,7 +96,8 @@ endMenuLoop:
     cmp     r5, r7
     blt     endMenuLoop
 
-    pop     {r4-r8, pc} //ret
+
+    pop     {r4-r8, pc}
 
 .global displayMenu
 displayMenu:
@@ -142,9 +138,9 @@ NamesPrint:
     ldr     r0, =drawArgs
     ldr     r1, =creator
     str     r1, [r0]
-    mov     r1, #240 		//x coord
+    mov     r1, #340 		//x coord
     str     r1, [r0, #4]
-    mov     r1, #34 		//y coord
+    mov     r1, #70 		//y coord
     str     r1, [r0, #8]
     mov     r1, #292 		//image width
     str     r1, [r0, #12]
@@ -182,7 +178,8 @@ MainMenuArrowPrint:
 
     pop     {r4-r7, pc}
 
-    //PauseMenuPrint draws the pause menu and arrow
+
+//PauseMenuPrint draws the pause menu and arrow
     PauseMenuPrint:
       push {lr}
       ldr r0, =drawArgs
@@ -329,3 +326,7 @@ MainMenuArrowPrint:
       mov r0, ArrowPosition //return int 1 (Restart), 2 (Quit), or 3 (Resume)
       .unreq ArrowPosition
       pop {r4-r10, pc} //return
+
+
+
+
