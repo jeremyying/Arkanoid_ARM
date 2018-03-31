@@ -106,22 +106,23 @@ DrawBounds:
 initBall:
   push {r4-r10, lr}
 
-  ldr     r0, =drawArgs
-  ldr     r2, =ballStats
+  ldr     r8, =drawArgs
   ldr     r1, =ball             //image ascii text address
-  str     r1, [r0]
+  ldr     r10, =ballStats
+
+  str     r1, [r8]
   mov     r1, #900                   //x coordinate
-  str     r1, [r0, #4]
-  mov r1, #900
-  str     r1, [r2]
+  str     r1, [r8, #4]
+
+  str     r1, [r10]
   mov     r1, #896                    //y coordinate
-  str     r1, [r0, #8]
-  mov r1, #896
-  str     r1, [r2, #4]
+  str     r1, [r8, #8]
+
+  str     r1, [r10, #4]
   mov     r1, #24                //image width
-  str     r1, [r0, #12]
+  str     r1, [r8, #12]
   mov     r1, #24                 //image height
-  str     r1, [r0, #16]
+  str     r1, [r8, #16]
   bl      drawImage
 
   pop {r4-r10, pc}
