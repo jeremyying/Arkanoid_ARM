@@ -156,6 +156,31 @@ moveBall:
   add r7, r9 //y + y speed
   str r7, [r10, #4]
 
+  push {r4-r10}
+  BlackBallOut:
+    mov r8, r6 //initial x
+    mov r9, r7 //initial y
+    mov r4, r6 //copy x coord
+    add r4, #24 //max x of draw
+    mov r5, r7 //copy y coord
+    add r5, #24 //max y of draw
+
+  BlackBallOutLoop:
+    mov     r0, r8
+    mov     r1, r9
+    mov     r2, #0xFF000000
+    bl      DrawPixel
+    add     r8, #1
+    teq     r8, r4
+    moveq   r8, r6
+    addeq   r9, #1
+    cmp     r9, r5
+    blt     BlackBallOutLoop
+  pop {r4-r10}
+
+
+
+
   ldr     r0, =drawArgs
   ldr     r1, =ball             //image ascii text address
   str r1, [r0]
