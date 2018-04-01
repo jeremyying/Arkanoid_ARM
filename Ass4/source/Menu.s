@@ -37,7 +37,7 @@ startGame:
     bl      gameMap         //start game
     cmp     r0, #1
     beq     startGame       //restart game, from pause menu
-	cmp r0, #2
+    cmp     r0, #2
     beq       menu
 
 drawArrow:

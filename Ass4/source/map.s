@@ -10,6 +10,7 @@ gameMap:
     bl      initMap
     bl      initPaddle
     bl      initBall
+    bl      updateStats
 
     APressed .req r10
     sticky  .req r9
@@ -17,11 +18,10 @@ gameMap:
     mov     APressed, #0
     mov     sticky, #0
 
-
 play:
 
-    mov     r0, #5000
-    bl      delayMicroseconds
+    //mov     r0, #20000
+    //bl      delayMicroseconds
 
     ldr     r0, =destroyed
     ldr     r1, [r0]
@@ -31,24 +31,33 @@ play:
     ldr     r0, =lives
     ldr     r1, [r0]
     cmp     r1, #0 		//check if lives are 0
+    moveq   r1, #5
+    streq   r1, [r0]
     beq     LoseGame
 
     bl      Read_SNES
     mov     r2, #0xffff     	//no buttons pressed
-    ldr     r0, =buttons
+
     ldr     r3, =paddleStats
     mov     r4, #0
     cmp     r1, r2
     streq   r4, [r0, #4]
+
     beq     continue
+
+    ldr     r0, =attached
+    mov     r4, #0
+    str     r4, [r0]
+
+    ldr     r0, =buttons
 
     ldrb    r2, [r0, #3]
     cmp     r2, #0 		//check if START is pressed
     beq     PauseMenuTrigger
 
-    ldrb    r2, [r0]
+    /* ldrb    r2, [r0]
     cmp     r2, #0 		//check if B is pressed
-    beq     DetachBall
+    beq     DetachBall */
 
     ldrb    r2, [r0,#8]
     cmp     r2, #0 		//check if A is pressed
@@ -61,6 +70,8 @@ play:
     ldrb    r2, [r0, #7]
     cmp     r2, #0 		//check if RIGHT is pressed
     beq     RPaddleMove
+
+    b       continue
 
 DetachBall:
     ldr     r0, =attached
@@ -81,8 +92,8 @@ LPaddleMove:
 
     ldr     r0, =paddleStats
     cmp     APressed, #1
-    moveq   r1, #-2 		//A is pressed, speed paddle up
-    movne   r1, #-1 		//negative paddle speed
+    moveq   r1, #-18 		//A is pressed, speed paddle up
+    movne   r1, #-9 		//negative paddle speed
 
     moveq   APressed, #0
 
@@ -93,8 +104,8 @@ RPaddleMove:
 
     ldr     r0, =paddleStats
     cmp     APressed, #1
-    moveq   r1, #2 		//A is pressed, speed paddle up
-    movne   r1, #1 		//negative paddle speed
+    moveq   r1, #18 		//A is pressed, speed paddle up
+    movne   r1, #9 		//negative paddle speed
     moveq   APressed, #0
     str     r1, [r0, #4] 		//store paddlespeed in paddleStats
     b       continue
@@ -106,13 +117,14 @@ PauseMenuTrigger:
     beq     endPlay
     cmp     r0, #2
     beq     endPlay
-    cmp r0, #3
-    beq continue
+    cmp     r0, #3
+    beq     continue
 
 
 continue:
-    //bl      moveBall
+    bl      moveBall
     bl      movePaddle
+    //bl      moveBall
     ldr     r0, =stickyPack
     cmp     sticky, #1
     streq   sticky, [r0]
@@ -120,8 +132,8 @@ continue:
     b       play
 
 WinGame:
-    push {r0}
     mov     r0, #2
+    push {r0}
     // need to print win message
 
     ldr     r0, =drawArgs
@@ -140,8 +152,9 @@ WinGame:
     b       PressToReturn
 
 LoseGame:
-    push {r0}
+
     mov     r0, #2
+    push {r0}
     // need to print lose message
 
     ldr     r0, =drawArgs
@@ -170,6 +183,7 @@ PressToReturn:
 endPlay:
     .unreq  APressed
     pop     {r4-r10, pc}
+
 
 .global initMap
 initMap:
