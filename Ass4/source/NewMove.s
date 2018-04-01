@@ -1,4 +1,5 @@
 
+
 @ Code section
 .section .text
 
@@ -437,6 +438,10 @@ lastFlip:
     streq   r2, [r0, #12]
 
 endCheckCo:
+    ldr     r2, =ballStats
+    ldr     r0, [r2]
+    ldr     r1, [r2, #4]            //the y of the block
+    bl 	    checkPowerUp  // check the powerup parameters
     pop     {r4-r9, pc}
 
 .global drawBFTile              //r0 = drawArgs ptr, r1 = x, r2 = y, r3 = tile ptr

@@ -123,6 +123,8 @@ continue:
     bl      drawGame
     bl      moveBall
     bl      movePaddle
+    bl      updatePowerup
+    //bl      DrawPowerUp
     ldr     r0, =stickyPack
     cmp     sticky, #1
     streq   sticky, [r0]
