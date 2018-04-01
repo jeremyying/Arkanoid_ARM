@@ -263,7 +263,7 @@ TestBounce:
     bl moveBall
     bl Reflection
 
-    ldr r0, =#16000
+    ldr r0, =#8000
     bl delayMicroseconds
 
     b TestBounceLoop
