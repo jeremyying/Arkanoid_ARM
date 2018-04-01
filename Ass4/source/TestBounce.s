@@ -146,17 +146,22 @@ initSpeed:
 moveBall:
   push {r4-r10, lr}
 
+  bl BlackBallOut
+
   ldr r10, =ballStats
   ldr r6, [r10] //x
   ldr r7, [r10, #4] //y
   ldr r8, [r10, #8] //x speed
   ldr r9, [r10, #12] //y speed
+
+  //bl BlackBallOut
+
   add r6, r8 //x + x speed
   str r6, [r10]
   add r7, r9 //y + y speed
   str r7, [r10, #4]
 
-  bl BlackBallOut
+  //bl BlackBallOut
 
   ldr     r0, =drawArgs
   ldr     r1, =ball             //image ascii text address
@@ -188,7 +193,7 @@ Reflection:
   ble LBound
   cmp r6, r5 //check Right Wall Collision
   bge RBound
-  cmp r7, #88 //check Top Collision
+  cmp r7, #89 //check Top Collision
   ble TBound
   cmp r7, #896 //check Bottom Collision
   bge BBound
@@ -225,13 +230,12 @@ BlackBallOut:
   push {r4-r10, lr}
   ldr r10, =ballStats
   ldr r4, [r10] //x
-  mov r4, r8
+  mov r8, r4
   ldr r5, [r10, #4] //y
   mov r6, r4
   add r6, #24 //max x
   mov r7, r5
   add r7, #24 //max y
-
 
   BlackBallOutLoop:
     mov     r0, r4
@@ -259,7 +263,7 @@ TestBounce:
     bl moveBall
     bl Reflection
 
-    ldr r0, =#100000
+    ldr r0, =#16000
     bl delayMicroseconds
 
     b TestBounceLoop
