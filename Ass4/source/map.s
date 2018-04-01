@@ -40,7 +40,7 @@ play:
     cmp     r1, r2
     streq   r4, [r0, #4]
 
-    beq     continue
+    beq     continue //No buttons Pressed, continue draw/calculations cycle
 
     ldr     r0, =attached
     mov     r4, #0
@@ -119,7 +119,7 @@ PauseMenuTrigger:
 
 
 continue:
-	bl		checkCollisions
+	  bl		  checkCollisions
     bl      drawGame
     bl      moveBall
     bl      movePaddle
@@ -181,6 +181,14 @@ PressToReturn:
   pop {r0}
 
 endPlay:
+    ldr r9, =lives
+    mov r10, #5
+    str r10, [r9] //reset Lives to 5 after ending a game
+
+    ldr r9, =score
+    mov r10, #0
+    str r10, [r9] //reset to Score to 0 after ending a game
+
     .unreq  APressed
     pop     {r4-r10, pc}
 

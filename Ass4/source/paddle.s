@@ -87,9 +87,4 @@ lives:
 
 .global score
 score:
-    .int    123
-
-
-
-
-
+    .int    0 //score starts at 0
