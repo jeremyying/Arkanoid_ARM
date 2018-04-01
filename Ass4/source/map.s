@@ -55,9 +55,9 @@ play:
     cmp     r2, #0 		//check if START is pressed
     beq     PauseMenuTrigger
 
-    /* ldrb    r2, [r0]
+    ldrb    r2, [r0]
     cmp     r2, #0 		//check if B is pressed
-    beq     DetachBall */
+    beq     DetachBall
 
     ldrb    r2, [r0,#8]
     cmp     r2, #0 		//check if A is pressed
@@ -122,16 +122,14 @@ PauseMenuTrigger:
 
 
 continue:
+	bl		checkCollisions
+    bl      drawGame
     bl      moveBall
     bl      movePaddle
-
     ldr     r0, =stickyPack
     cmp     sticky, #1
     streq   sticky, [r0]
     moveq   sticky, #0
-
-
-
     b       play
 
 WinGame:
