@@ -285,11 +285,26 @@ YLoop:
     subge   r3, #1 //reduce hardness
     strge   r3, [r0]
 
+//Jeremy Code
+
   IncrementScore:
     ldrge r9, =score
     ldrge r10, [r9] //load score value
-    addge r10, #10 //increment scorey by 10pts every collision
-    str r10, [r9] //store new score back
+    addge r10, #1 //increment scorey by 1pts every collision
+    strge r10, [r9] //store new score back
+
+  StorePowerUpCoords:
+    ldrge r9, =PowerUpBlock
+    movge r10, r1 //broken Tile X Coord
+    addge r10, #8 //increase x to account for PowerUp Image sizes
+    strge r10, [r9] //score x coord of PowerUp
+
+    movge r10, r2 //broken tile Y coord
+    addge r10, #32 //draw right below the brick
+    //movge r10, #344 //y value right below blocks
+    strge r10, [r9, #4] //store y coord
+
+//Jeremy Code
 
     ldreq   r3, =fTile
     beq     firstFlip
