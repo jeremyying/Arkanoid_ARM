@@ -124,11 +124,14 @@ PauseMenuTrigger:
 continue:
     bl      moveBall
     bl      movePaddle
-    //bl      moveBall
+
     ldr     r0, =stickyPack
     cmp     sticky, #1
     streq   sticky, [r0]
     moveq   sticky, #0
+
+
+
     b       play
 
 WinGame:

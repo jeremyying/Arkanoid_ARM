@@ -2,7 +2,6 @@
 @ Code section
 .section .text
 
-
 .global printNum
 printNum:
 	push    {r4-r10, lr}
@@ -13,7 +12,7 @@ printNum:
 	mov	r8, r3			@load color
 	mov	r9, #100
 	mov 	r10, #0
-	printLoop:	
+	printLoop:
 		mov r10, #0
 		//check for a 100 digit
 		calcHundLoop:
@@ -25,7 +24,7 @@ printNum:
 		doneHundLoop:
 			cmp r10, #0
 			beq	checkTen
-			add 	r0, r10, #48	
+			add 	r0, r10, #48
 			mov 	r3, r8	//color
 			mov 	r1, r7		//y
 			mov 	r2, r6		//x
@@ -34,9 +33,9 @@ printNum:
 			sub	r4, r4, r5
 			mov 	r5, r4
 			add	r7, r7, #16
-			
+
 			mov r10, #0
-		
+
 		checkTen:
 			cmp 	r5, #10
 			blt	checkZero
@@ -45,37 +44,34 @@ printNum:
 			b 	checkTen
 
 		checkZero:
-		
-		add 	r0, r10, #48	
+
+		add 	r0, r10, #48
 		mov 	r3, r8	//color
 		mov 	r1, r7		//y
 		mov 	r2, r6		//x
 		bl 	drawText
 		mov	r9, #10
-		
+
 		sub	r4, r4, r5
 		add	r7, r7, #16
-		
+
 	donePrint:
-		add 	r0, r5, #48	
+		add 	r0, r5, #48
 		mov 	r3, r8	//color
 		mov 	r1, r7		//y
 		mov 	r2, r6		//x
-		bl 	drawText		
-	
+		bl 	drawText
 
-
-	
     		pop     {r4-r10, pc}
 
 
 .global updateStats
 updateStats:
 	push    {r4-r10, lr}
-	
+
 	//ldr r4, =stats
 	mov r5, #0xFFFFFFFF
-	
+
 	//print the score
 
 	mov 	r0, #999			//character
@@ -88,9 +84,24 @@ updateStats:
 	mov 	r3, r5		//color
 	mov 	r1, #25	//y
 	mov 	r2, #1225		//x
-	
+
 	bl printNum
-	
 
 	return:
     		pop     {r4-r10, pc}
+
+.global LivesUpdate
+LivesUpdate:
+	push {lr}
+	ldr r0, =ballStats
+	ldr r1, [r0, #4]
+	cmp r1, #920
+	blt LivesUpdateReturn
+
+	ldr r0, =lives
+	ldr r1, [r0]
+	sub r1, #1 //lose 1 life
+	str r1, [r0] //save new life count
+
+LivesUpdateReturn:
+	pop {pc}
