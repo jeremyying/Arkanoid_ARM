@@ -82,19 +82,59 @@ bottFloor:
     cmp     r4, r6
     blt     bottFloor
 
-
-
-
     pop     {r4-r7}
     mov     pc, lr
-
+
+.global drawGame
+drawGame:
+    push    {r4-r9, lr}
+    
+    mov     r1, #4
+    mov     r2, #18
+    mul     r3, r1, r2
+    add     r3, r3, lsl #3
+
+    ldr     r4, =myArray
+    add     r4, r3
+    mov     r5, #0
+    mov     r6, #72
+
+printLoop:
+    ldr     r7, [r4], #4
+    ldr     r8, [r4], #4
+    ldrb    r9, [r4], #1
+    ldr     r0, =drawArgs
+    cmp     r9, #0
+    ldreq   r1, =fTile
+    cmp     r9, #1
+    ldreq   r1, =gBrick
+    cmp     r9, #2
+    ldreq   r1, =oBrick
+    cmp     r9, #3
+    ldreq   r1, =bBrick
+    str     r1, [r0]
+    str     r7, [r0, #4]
+    str     r8, [r0, #8]
+    mov     r1, #64
+    str     r1, [r0, #12]
+    mov     r1, #32
+    str     r1, [r0, #16]
+    bl      drawImage
+    add     r5, #1
+    cmp     r5, r6
+    blt     printLoop
+    
+
+    pop     {r4-r9, pc}
+
+
+
 @ Data section
 .section .data
 
 .global myArray
 myArray:
 .skip       504*9
-
 
 
 

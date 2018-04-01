@@ -64,13 +64,13 @@ pulseLoop:
     blt     pulseLoop
 
     .unreq  i_r
+
+    ldr     r0, =#12000
+    bl      delayMicroseconds
+
+
     ldr     r0, =buttons
     mov     r1, r7
-
-    push {r0}
-    ldr     r0, =#86000
-    bl      delayMicroseconds
-    pop {r0}
 
     pop     {r4-r7, pc}
 
@@ -144,3 +144,5 @@ buttons:
 .global gpioBaseAddress
 gpioBaseAddress:
 .int    0
+
+

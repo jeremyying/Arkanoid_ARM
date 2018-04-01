@@ -79,28 +79,36 @@ DrawPixel:
 	str		r2, [r0, offset]
 	
 	pop		{r4, r5}
-	bx		lr
+	mov		pc, lr
 
 
 @ Draw the character 'B' to (0,0)
 .global drawText
 drawText:
-	push		{r4-r8, lr}
+	push		{r4-r11, lr}
 
 	chAdr		.req	r4
-	px		    .req	r5
-	py		    .req	r6
-	row		    .req	r7
+	px		.req	r5
+	py		.req	r6
+	row		.req	r7
 	mask		.req	r8
+	pxInit		.req	r9
+	pyInit		.req	r10
+	color		.req	r11
+	
 
 	ldr		chAdr, =font		@ load the address of the font map
-	mov		r0, #'9'		@ load the character into r0
+			@ load the character into r0
 	add		chAdr,	r0, lsl #4	@ char address = font base + (char * 16)
+	
+	mov 		pxInit, r1			@ save the X init 
+	mov		pyInit, r2			@ save the Y init
+	mov 		color , r3	
 
-	mov		py, #200		@ init the Y coordinate (pixel coordinate)
+	mov		py, pyInit		@ init the Y coordinate (pixel coordinate)
 
 charLoop$:
-	mov		px, #200		@ init the X coordinate
+	mov		px, pxInit		@ init the X coordinate
 
 	mov		mask, #0x01		@ set the bitmask to 1 in the LSB
 	
@@ -109,11 +117,14 @@ charLoop$:
 rowLoop$:
 	tst		row,	mask		@ test row byte against the bitmask
 	beq		noPixel$
-
-	mov		r0, px
-	mov		r1, py
-	mov		r2, #0x00FF0000		@ red
-	bl		DrawPixel		@ draw red pixel at (px, py)
+	
+	mov r0, px
+	mov r1, py
+	mov r2, pxInit
+	mov r3, pyInit
+	bl scalePixel
+	mov r0, color
+	bl drawScalePixel
 
 noPixel$:
 	add		px, #1			@ increment x coordinate by 1
@@ -132,8 +143,83 @@ noPixel$:
 	.unreq	py
 	.unreq	row
 	.unreq	mask
+	.unreq	pxInit
+	.unreq	pyInit
+	.unreq	color
+	pop		{r4-r11, pc}
+.global scalePixel
+scalePixel:
+	push		{r4-r9, lr}
+	ldr		r9, =scaleArray
+	mov r6, #2 // scale factor
+	sub r4, r0, r2	//m = x - originx
+	sub r5, r1, r3	//n = y - originy
+	
+	//case 1
+	mla 	r7, r4, r6, r2 //new x = m*2 + origin x	 
+	str	r7, [r9]
+	mla 	r7, r5, r6, r3 //new y = n*2 + origin y
+	str	r7, [r9, #4]
 
-	pop		{r4-r8, pc}
+	//case 2
+	mla 	r7, r4, r6, r2 //new x = m*2 + origin x	 
+	add 	r7, r7 , #1	//new x + 1
+	str	r7, [r9, #8]
+	mla 	r7, r5, r6, r3 //new y = n*2 + origin y
+	str	r7, [r9, #12]
+
+	//case 3
+	mla 	r7, r4, r6, r2 //new x = m*2 + origin x	 
+	str	r7, [r9, #16]
+	mla 	r7, r5, r6, r3 //new y = n*2 + origin y
+	add 	r7, r7 , #1	//new y + 1
+	str	r7, [r9, #20]
+
+	//case 4
+	mla 	r7, r4, r6, r2 //new x = m*2 + origin x	 
+	add 	r7, r7 , #1	//new y + 1
+	str	r7, [r9, #24]
+	mla 	r7, r5, r6, r3 //new y = n*2 + origin y
+	add 	r7, r7 , #1	//new y + 1
+	str	r7, [r9, #28]
+
+	mov r0, r9 //return the 
+
+
+	pop		{r4-r9, pc}
+
+.global drawScalePixel
+drawScalePixel:
+	push		{r4-r9, lr}
+	
+	color		.req	r4
+	px		.req	r7
+	py		.req	r8
+	mov 	color, r0
+	ldr 	r5, =scaleArray
+	mov 	r6, #0
+	printLoop:
+		cmp r6, #24
+		bgt done
+		ldr px, [r5, r6]
+		add r6, r6, #4
+		ldr py, [r5, r6]
+		add r6, r6, #4
+		mov		r0, px
+		mov		r1, py
+		mov		r2, color
+		bl		DrawPixel
+		b		printLoop		@ draw red pixel at (px, py)
+		
+	done:
+		pop		{r4-r9, pc}
+			@load the color in
+
+
+
+
+
+	
 @ Data section
 .section .data
 
@@ -148,6 +234,19 @@ drawArgs:
     .int    0       //y coordinate
     .int    0       //width of image
     .int    0       //height of image
+
+.global scaleArray
+scaleArray:
+	//x and y for each scaled point
+	.int	0	
+	.int 	0
+	.int	0
+	.int	0
+	.int	0
+	.int	0
+	.int	0
+	.int	0
+
 
 
 .align 4

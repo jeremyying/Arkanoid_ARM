@@ -2,10 +2,6 @@
 @ Code section
 .section .text
 
-/*gameMap returns an int in r0:
-
-      1 - Restart game
-      2 - Main Menu */
 .global gameMap
 gameMap:
     push    {r4-r10, lr}
@@ -14,6 +10,7 @@ gameMap:
     bl      initMap
     bl      initPaddle
     bl      initBall
+    bl      updateStats
 
     APressed .req r10
     sticky  .req r9
@@ -21,11 +18,7 @@ gameMap:
     mov     APressed, #0
     mov     sticky, #0
 
-
 play:
-
-    /*mov     r0, #16650
-    bl      delayMicroseconds*/
 
     ldr     r0, =destroyed
     ldr     r1, [r0]
@@ -35,24 +28,33 @@ play:
     ldr     r0, =lives
     ldr     r1, [r0]
     cmp     r1, #0 		//check if lives are 0
+    moveq   r1, #5
+    streq   r1, [r0]
     beq     LoseGame
 
     bl      Read_SNES
     mov     r2, #0xffff     	//no buttons pressed
-    ldr     r0, =buttons
+
     ldr     r3, =paddleStats
     mov     r4, #0
     cmp     r1, r2
     streq   r4, [r0, #4]
+
     beq     continue
+
+    ldr     r0, =attached
+    mov     r4, #0
+    str     r4, [r0]
+
+    ldr     r0, =buttons
 
     ldrb    r2, [r0, #3]
     cmp     r2, #0 		//check if START is pressed
     beq     PauseMenuTrigger
 
-    ldrb    r2, [r0]
+    /* ldrb    r2, [r0]
     cmp     r2, #0 		//check if B is pressed
-    beq     DetachBall
+    beq     DetachBall */
 
     ldrb    r2, [r0,#8]
     cmp     r2, #0 		//check if A is pressed
@@ -65,6 +67,8 @@ play:
     ldrb    r2, [r0, #7]
     cmp     r2, #0 		//check if RIGHT is pressed
     beq     RPaddleMove
+
+    b       continue
 
 DetachBall:
     ldr     r0, =attached
@@ -85,11 +89,10 @@ LPaddleMove:
 
     ldr     r0, =paddleStats
     cmp     APressed, #1
-    //moveq   r1, #-2 		//A is pressed, negative speed paddle up
-    //movne   r1, #-1 		//negative paddle speed
+    moveq   r1, #-18 		//A is pressed, speed paddle up
+    movne   r1, #-9 		//negative paddle speed
 
-    moveq   r1, #-40 		//A is pressed, negative speed paddle up
-    movne   r1, #-18 		//negative paddle speed
+    moveq   APressed, #0
 
     str     r1, [r0, #4] 		//store paddlespeed in paddleStats
     b       continue
@@ -98,33 +101,28 @@ RPaddleMove:
 
     ldr     r0, =paddleStats
     cmp     APressed, #1
-    //moveq   r1, #2 		//A is pressed, positive speed paddle up
-    //movne   r1, #1 		//positive paddle speed
-
-    moveq   r1, #40 		//A is pressed, positive speed paddle up
-    movne   r1, #18 		//positive paddle speed
-
+    moveq   r1, #18 		//A is pressed, speed paddle up
+    movne   r1, #9 		//negative paddle speed
+    moveq   APressed, #0
     str     r1, [r0, #4] 		//store paddlespeed in paddleStats
     b       continue
 
 PauseMenuTrigger:
     bl      PauseMenuButtonCheck
-    /*PauseMenuButtonCheck returns an int in r0 based on user selections made inside the pause menu:
-          1 - Restart game
-          2 - Quit game
-          3 - Resume game */
 
-    cmp	    r0, #1 //ret Restart game flag
+    cmp	    r0, #1
     beq     endPlay
-    cmp     r0, #2 //ret Main Menu flag
+    cmp     r0, #2
     beq     endPlay
-    cmp r0, #3 //Resume Game
-    beq continue //? I assume this continues the game?
+    cmp     r0, #3
+    beq     continue
 
 
 continue:
-    //bl      moveBall
-    //bl      movePaddle
+	bl		checkCollisions
+    bl      drawGame
+    bl      moveBall
+    bl      movePaddle
     ldr     r0, =stickyPack
     cmp     sticky, #1
     streq   sticky, [r0]
@@ -132,25 +130,9 @@ continue:
     b       play
 
 WinGame:
-    mov     r0, #2 //set flag to return to main
-
+    mov     r0, #2
     push {r0}
-    mov     r4, #0
-    mov     r5, #24
-    mov     r6, #1824
-    mov     r7, #984
-
-WinGameLoop:
-    mov     r0, r4
-    mov     r1, r5
-    mov     r2, #0xFF000000
-    bl      DrawPixel
-    add     r4, #1
-    teq     r4, r6
-    moveq   r4, #0
-    addeq   r5, #1
-    cmp     r5, r7
-    blt     WinGameLoop
+    // need to print win message
 
     ldr     r0, =drawArgs
     ldr     r1, =WinImage
@@ -165,33 +147,16 @@ WinGameLoop:
     str     r1, [r0, #16]
     bl      drawImage
 
-    pop {r0}
-
-    b       endPlay
+    b       PressToReturn
 
 LoseGame:
-    mov     r0, #2 //set flag to return to main
 
+    mov     r0, #2
     push {r0}
-    mov     r4, #0
-    mov     r5, #24
-    mov     r6, #1824
-    mov     r7, #984
-
-LoseGameLoop:
-    mov     r0, r4
-    mov     r1, r5
-    mov     r2, #0xFF000000
-    bl      DrawPixel
-    add     r4, #1
-    teq     r4, r6
-    moveq   r4, #0
-    addeq   r5, #1
-    cmp     r5, r7
-    blt     LoseGameLoop
+    // need to print lose message
 
     ldr     r0, =drawArgs
-    ldr     r1, =WinImage
+    ldr     r1, =LoseImage
     str     r1, [r0]
     mov     r1, #760 		//x coord
     str     r1, [r0, #4]
@@ -203,13 +168,20 @@ LoseGameLoop:
     str     r1, [r0, #16]
     bl      drawImage
 
-    pop {r0}
+    b PressToReturn
 
-    b       endPlay
+PressToReturn:
+  bl Read_SNES
+  mov r2, #0xffff
+  cmp r1, r2
+  beq PressToReturn
+
+  pop {r0}
 
 endPlay:
     .unreq  APressed
     pop     {r4-r10, pc}
+
 
 .global initMap
 initMap:

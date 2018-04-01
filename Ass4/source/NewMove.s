@@ -2,218 +2,60 @@
 @ Code section
 .section .text
 
-.global movePaddle
-movePaddle:
-    push    {r4-r8, lr}
-
-    //check boundaries
-    bl      checkPaddleBound
-    mov     r4, r0
-    mov     r5, r1
-    bl      drawPaddleBack
-
-    ldr     r3, =paddleStats    //load paddle stats
-    ldr     r6, [r3]            //load x coordinate
-    ldr     r7, [r3, #4]        //load speed
-    ldr     r8, [r3, #8]        //load if extended
-    cmp     r7, #0
-    beq     endMovePad
-
-    cmp     r4, #1
-    beq     drawPaddleLeft
-    cmp     r5, #1
-    beq     drawPaddleRight
-
-    
-    add     r6, r7
-    str	    r6, [r3]
-    mov     r7, #0
-    str     r7, [r3, #4]
-    cmp     r8, #1
-    ldreq   r1, =exPaddle
-    ldrne   r1, =paddle
-
-    ldr     r0, =drawArgs
-    str     r1, [r0]
-    str     r6, [r0, #4]
-    mov     r1, #920
-    str     r1, [r0, #8]
-    movne   r1, #128
-    moveq   r1, #192
-    str     r1, [r0, #12]
-    mov     r1, #32
-    str     r1, [r0, #16]
-    bl      drawImage
-    b       endMovePad
-
-drawPaddleLeft:
-    cmp     r8, #1
-    ldreq   r1, =exPaddle
-    ldrne   r1, =paddle
-    ldr     r0, =drawArgs
-    str     r1, [r0]
-    mov     r1, #336
-    str     r1, [r0, #4]
-    mov     r1, #920
-    str     r1, [r0, #8]
-      movne   r1, #128
-    moveq   r1, #192
-    str     r1, [r0, #12]
-    mov     r1, #32
-    str     r1, [r0, #16]
-    bl      drawImage
-    b       endMovePad
-
-drawPaddleRight:
-    cmp     r8, #1
-    ldreq   r1, =exPaddle
-    ldrne   r1, =paddle
-    moveq   r2, #1296
-    movne   r2, #1360
-    ldr     r0, =drawArgs
-    str     r1, [r0]
-    str     r2, [r0, #4]
-    mov     r1, #920
-    str     r1, [r0, #8]
-    movne   r1, #128
-    moveq   r1, #192
-    str     r1, [r0, #12]
-    mov     r1, #32
-    str     r1, [r0, #16]
-    bl      drawImage
-
-endMovePad:
-    pop     {r4-r8, pc}
-
-
-.global checkPaddleBound
-checkPaddleBound:
-    push    {r4-r7}
-
-    ldr     r3, =paddleStats
-    ldr     r4, [r3]            //load x coordinate
-    ldr     r7, [r3, #4]        //load the speed of the paddle
-    add     r4, r4, r7          //update the ball position so we can tell if there is a colision
-    ldr     r5, [r3, #8]        //load if extened
-
-    mov     r6, #336
-    mov     r0, #0             //r0 = left collision boolean
-    cmp     r4, r6
-    movle   r0, #1
-
-    cmp     r5, #1
-    moveq   r6, #1328
-    movne   r6, #1360
-    mov     r1, #0              //r1 = right collision boolean
-    cmp     r4, r6
-    movge   r1, #1
-
-    pop     {r4-r7}
-    mov     pc, lr
-
-
-.global drawPaddleBack
-drawPaddleBack:
-    push    {r4-r7, lr}
-
-    ldr     r3, =paddleStats    //load paddle stats
-    ldr     r4, [r3]            //load x coordinate
-    ldr     r5, [r3, #8]        //load if extended
-
-    mov     r6, #336
-    sub     r4, r6              //x - left boundary, r4 becomes remaining pixels along x
-    mov     r7, #0              //r7 = x index
-    
-calcLoop:
-    cmp     r4, #63
-    subhi   r4, #64
-    addhi   r7, #1
-    bhi     calcLoop
-
-    mov     r6, #64
-    mul	    r4, r7, r6
-    mov     r6, #336
-    add     r4, r6
-
-    //cmp	    r0, #1
-    //beq     drawAtLeft
-    //cmp     r1, #1
-    //beq     drawAtRight
-
-    cmp     r5, #1
-    moveq   r6, #4
-    movne   r6, #3
-    mov     r5, #0
-    b       drawBack
-
-drawAtLeft:
-    mov     r4, #336
-    mov     r6, #3
-    mov     r5, #0
-    b       drawBack
-
-drawAtRight:
-    cmp     r5, #1
-    moveq   r4, #1296
-    moveq   r6, #3
-    movne   r4, #1360
-    movne   r6, #2
-    mov     r5, #0
-
-drawBack:
-    ldr     r0, =drawArgs
-    ldr     r1, =fTile
-    str     r1, [r0]
-    mov     r1, r4                  //x coordinate
-    str     r1, [r0, #4]
-    mov     r1, #920                    //y coordinate
-    str     r1, [r0, #8]
-    mov     r1, #64                //image width
-    str     r1, [r0, #12]
-    mov     r1, #32                 //image height
-    str     r1, [r0, #16]
-    bl      drawImage
-    add     r4, #64
-    add     r5, #1
-    cmp     r5, r6
-    blt     drawBack    
-
-    pop     {r4-r7, pc}
-
 
 .global moveBall
 moveBall:
-    push    {r4, lr}
+    push    {r4-r7, lr}
+    
+    
+    //ldr     r0, =attached
+    //ldr     r4, [r0]
 
-    ldr     r0, =attached
-    ldr     r1, [r0]
-    cmp     r1, #1
-    beq     padBall         //branch to move ball on paddle speed
+    //cmp     r4, #1
+    //beq     padBall         //branch to move ball on paddle speed
+
+    bl      drawBFTile
+
+    bl      padCollision
+    cmp     r0, #1
+    beq     endMoveBall
+    
+    //bl    brickCollision
+    //cmp   r0, #1
+    //beq   endMoveBall
 
     ldr     r0, =ballStats
-    ldr     r4, [r0, #4]
-    mov     r1, #344
-    cmp     r4, r1          //if ball below brick area
-    bge     drawBFloor
-    mov     r1, #184
+    ldr     r4, [r0]		//ball x coordinate
+    ldr     r5, [r0, #4]	//ball y coordinate
+    ldr     r6, [r0, #8]	//ball x speed
+    ldr     r7, [r0, #12]	//ball y speed
+    add     r4, r6
+    add     r5, r7
+
+    mov     r1, #336
     cmp     r4, r1
-    bge     nextCo
-    bl      drawBFTile
-    bl      checkBound
-    b       drawBall
+    movle   r4, r1
+    negle   r6, r6
+    strle   r6, [r0, #8]
+    mov     r1, #1464
+    cmp     r4, r1
+    movge   r4, r1
+    negge   r6, r6
+    strge   r6, [r0, #8]
 
-brickCo:
-    bl      checkCollisions
-    b       drawBall
+    mov     r1, #88
+    cmp     r5, r1
+    movle   r5, r1
+    negle   r7, r7
+    strle   r7, [r0, #12]
 
-drawBFloor:
-    bl      drawBFTile
-    bl      padCollision    //else check collision with paddle
-    cmp     r0, #1
-    beq     drawBall
-    bl      checkBound
-    cmp     r0, #1
-    beq     loseLife
+    mov     r1, #960
+    cmp     r5, r1
+    bge     loseLife
+    
+    str     r4, [r0]
+    str     r5, [r0, #4]
+
     b       drawBall
 
 loseLife:
@@ -221,7 +63,7 @@ loseLife:
     ldr     r1, [r0]
     sub     r1, #1
     str     r1, [r0]
-    mov     r1, #1
+    /* mov     r1, #1
     ldr     r0, =attached
     str     r1, [r0]
     ldr     r0, =paddleStats
@@ -230,184 +72,173 @@ loseLife:
     cmp     r2, #1
     moveq   r2, #84
     movne   r2, #52
-    add     r1, r2
+    add     r1, r2 
     ldr     r0, =ballStats
     str     r1, [r0]
     mov     r1, #896
-    str     r1, [r0, #4]
+    str     r1, [r0, #4] */
+    
+    bl      initBall		//temp ball reset
 
+    ldr     r0, =ballStats
+    ldr     r4, [r0]		//ball x coordinate
+    ldr     r5, [r0, #4]	//ball y coordinate
+    b       drawBall
+    
+    
+/*
 padBall:
     ldr     r0, =paddleStats
-    ldr     r1, [r0, #4]
+    ldr     r1, [r0, #4]		//load paddle speed
     ldr     r0, =ballStats
     str     r1, [r0, #8]        //set ball speed to paddle speed
     mov     r1, #0
-    str     r1, [r0, #12]
+    str     r1, [r0, #12] */
 
 drawBall:
-    ldr     r0, =ballStats
-    ldr     r2, [r0]
-    ldr     r3, [r0, #4]
-    ldr     r4, [r0, #8]
-    add     r2, r4
-    ldr     r4, [r0, #12]
-    add     r3, r4
-    str     r2, [r0]
-    str     r3, [r0, #4]
     ldr     r0, =drawArgs
     ldr     r1, =ball
     str     r1, [r0]
-    str     r2, [r0, #4]
-    str     r3, [r0, #8]
-    mov     r4, #24
-    str     r4, [r0, #12]
-    str     r4, [r0, #16]
+    str     r4, [r0, #4]
+    str     r5, [r0, #8]
+    mov     r1, #24
+    str     r1, [r0, #12]
+    str     r1, [r0, #16] 
     bl      drawImage
 
-    pop     {r4, pc}
+endMoveBall:
+    pop     {r4-r7, pc}
 
-
-//returns r0 = side collision, r1 = top collision, r2 = bottom out of bounds
-//r3 = collision with paddle
-.global checkBound
-checkBound:
-    push    {r4, r5}
-
-    ldr     r2, =ballStats
-    ldr     r3, [r2]            //load x coordinate
-    ldr     r4, [r2, #4]        //load y coordinate
-
-    mov     r5, #336
-    mov     r1, #0              //side boundary collision boolean
-    cmp     r3, r5
-    movle   r1, #1
-    mov     r5, #1424
-    cmp     r3, r5
-    movge   r1, #1
-    ldr     r5, [r2, #8]
-    neg     r5, r5
-    cmp     r1, #1
-    streq   r5, [r2, #8]
-
-    mov     r5, #88
-    mov     r1, #0              //top boundary collision
-    cmp     r4, r5
-    movle   r1, #1
-    ldr     r5, [r2, #12]
-    neg     r5, r5
-    cmp     r1, #1
-    streq   r5, [r2, #12]
-
-    mov     r0, #0              //r2 = bottom boundary
-    mov     r5, #960
-    cmp     r4, r5
-    movge   r0, #1
-
-    pop     {r4, r5}
-    mov     pc, lr
 
 .global padCollision
 padCollision:
-    push    {r4-r7}
+    push    {r4-r8, lr}
 
     ldr     r0, =ballStats
-    ldr     r1, [r0]            //r1 = ball x coordinate
-    ldr     r2, [r0, #4]        //r2 = ball y coordinate
+    ldr     r4, [r0]		//ball x coordinate
+    ldr     r5, [r0, #4]	//ball y coordinate
+    ldr     r6, [r0, #8]	//ball x speed
+    ldr     r7, [r0, #12]	//ball y speed
 
+    add     r4, r6		//r4 = updated ball x coordinate
+    add     r5, r7		//r5 = update ball y coordinate
 
     ldr     r0, =paddleStats
-    ldr     r3, [r0]            //r3 = paddle x coordinate
-    sub     r3, #24
-    ldr     r4, [r0, #4]        //r4 = paddle speed
-    ldr     r5, [r0, #8]        //r5 = extended paddle on
-    cmp     r5, #1
-    moveq   r6, #216            //r6 = paddle extended width + ball width
-    movne   r6, #152            //r6 = paddle normal width + ball width
+    ldr     r6, [r0]		//paddle x coordinate
+    ldr     r7, [r0, #4]	//paddle x speed
+    ldr     r8, [r0, #8]	//r8 = extended paddle flag
 
-    ldr     r0, =stickyPack
+    add     r6, r7
+    sub     r6, #24		//r6 = adjusted paddle x coordinate
+
+    cmp     r8, #1
+    moveq   r7, #216            //r7 = paddle extended width + ball width
+    movne   r7, #152            //r7 = paddle normal width + ball width
+
+    /* ldr     r0, =stickyPack
     ldr     r7, [r0]
     cmp     r7, #0              //if sticky Pad is off
-    beq     nextCo
-    mov     r7, #896
-    cmp     r2, r7              //check y coordinate
-    subge   r2, r7
-    cmp     r2, #12
-    bgt     nextCo
-    cmp     r1, r3              //check x coordinate
-    subge   r1, r3
-    cmp     r1, r6
-    bgt     nextCo
-    ldr     r7, [r0, #4]        //stickyPack is on
-    cmp     r7, #1
-    subgt   r7, #1
-    strgt   r7, [r0, #4]        //update stickyPack
-    moveq   r7, #0
-    streq   r7, [r0]
-    ldr     r0, =ballStats
-    mov     r7, #0
-    str     r4, [r0, #8]        //update ball speed to paddle speed
-    str     r7, [r0, #12]
-    mov     r1, #1
-    ldr     r0, =attached
-    str     r1, [r0]
-    mov     r0, #1              //speed changed
-    b       endPadCo            //return
+    beq     nextCo */
 
-nextCo:
-    ldr     r0, =ballStats
-    ldr     r1, [r0]            //r1 = ball x coordinate
-    ldr     r2, [r0, #4]        //r2 = ball y coordinate
-    mov     r7, #896
-    cmp     r2, r7              //check y coordinate
-    subge   r2, r7
-    cmp     r2, #48
+    cmp	    r4, r6		//check ball x coordinate
+    movlt   r0, #0
+    blt     endPadCo
+    subge   r4, r6		//r4 = ball remaining pixels
+    cmp     r4, r7
+    movgt   r0, #0
+    bgt     endPadCo		//if passed this point, ball is
+				            //within paddle x range
+    mov     r1, #896		//check y coordinate
+    cmp     r5, r1
+    movlt   r0, #0
+    blt     endPadCo
+    mov     r1, #952
+    cmp     r5, r1
     movge   r0, #0
     bge     endPadCo
-    cmp     r5, #1
-    moveq   r7, #48             //if extended paddle on, use 48 to calc place of ball on paddle
-    movne   r7, #32
-    cmp     r1, r3              //check x coordinate
-    subgt   r1, r3
-    cmp     r1, r6
-    movgt   r0, #0
-    bgt     endPadCo
-    cmp     r2, #12             //if ball halfway through paddle, assume it's on the side
-    strle   r4, [r0, #8]        //use paddle speed to update ball speed
-    movle   r0, #1
-    ble     endPadCo
-    sub     r6, r7              //subtract a quarter from paddle width
-    cmp     r1, r6              //check if ball is on right end of paddle
-    movgt   r1, #1
-    strgt   r1, [r0, #8]        //ball speed updated to 45 deg right up
-    strgt   r1, [r0, #12]
-    movgt   r0, #1
-    bgt     endPadCo
-    sub     r6, r7
-    cmp     r1, r6              //check if ball is on right mid of paddle
-    movgt   r1, #1
-    movgt   r2, #2
-    strgt   r1, [r0, #4]        //ball speed updated 60 deg right up
-    strgt   r2, [r0, #12]
-    movgt   r0, #1
-    bgt     endPadCo
-    sub     r6, r7
-    cmp     r1, r6              //check if ball is on left mid of paddle
-    movgt   r1, #-1
-    movgt   r2, #2
-    strgt   r1, [r0, #4]        //ball speed updated to 60 deg left up
-    strgt   r2, [r0, #12]
-    movgt   r0, #1
-    movgt   r1, #1
-    bgt     endPadCo
-    mov     r1, #-1
-    mov     r2, #1
-    str     r1, [r0, #8]        //ball speed updated to 45 deg left up
+    mov     r1, #908
+    cmp     r5, r1
+    blt     topPadCo
+   
+sidePadCo:
+    ldr     r0, =ballStats
+    ldr     r8, [r0, #8]	//ball x speed
+    neg     r8, r8		// flip ball x speed
+    str     r8, [r0, #8]
+
+    cmp     r4, #24		//check if ball on left side of paddle
+    strlt   r6, [r0]            //update ball x coordinate
+    addge   r6, r7		//assume ball is on right side of paddle
+    strge   r6, [r0]
+
+    ldr     r0, =drawArgs
+    ldr     r1, =ball
+    str     r1, [r0]
+    str     r6, [r0, #4]
+    str     r5, [r0, #8]
+    mov     r1, #24
     str     r1, [r0, #12]
+    str     r1, [r0, #16] 
+    bl      drawImage
+    mov     r0, #1
+    b       endPadCo
+
+topPadCo:
+    ldr     r0, =ballStats
+    add     r6, r4
+    str     r6, [r0]
+    mov     r5, #896
+    str     r5, [r0, #4]
+    
+    ldr     r0, =paddleStats
+    ldr     r1, [r0, #8]
+    cmp     r1, #1
+    moveq   r2, #48             //if extended paddle on, use 48 to calc place of ball on paddle
+    movne   r2, #32
+    
+    ldr     r0, =ballStats
+    sub     r7, r2	
+    cmp     r4, r7		//check if ball is on right end of paddle
+    movge   r4, #3
+    strge   r4, [r0, #8]
+    movge   r4, #-3
+    strge   r4, [r0, #12]
+    bge     padCoDrawBall
+    
+    sub     r7, r2	
+    cmp     r4, r7		//check if ball is on mid right end of paddle
+    movge   r4, #2
+    strge   r4, [r0, #8]
+    movge   r4, #-4
+    strge   r4, [r0, #12]
+    bge     padCoDrawBall
+    
+    sub     r7, r2	
+    cmp     r4, r7		//check if ball is on mid left end of paddle
+    movge   r4, #-2
+    strge   r4, [r0, #8]
+    movge   r4, #-4
+    strge   r4, [r0, #12]
+    bge     padCoDrawBall
+    		
+    mov     r4, #-3		//ball is on left end of paddle
+    str     r4, [r0, #8]
+    str     r4, [r0, #12]
+
+padCoDrawBall:
+    ldr     r0, =drawArgs
+    ldr     r1, =ball
+    str     r1, [r0]
+    str     r6, [r0, #4]
+    str     r5, [r0, #8]
+    mov     r1, #24
+    str     r1, [r0, #12]
+    str     r1, [r0, #16] 
+    bl      drawImage
     mov     r0, #1
 
 endPadCo:
-    pop     {r4-r7}
-    mov     pc, lr
+    pop     {r4-r8, pc}
 
 
 .global checkCollisions
@@ -633,40 +464,104 @@ calcYLoop:
     addhi   r8, #1
     bhi     calcYLoop
 
-    mov     r6, #64
-    mul     r4, r7, r6
-    mov     r6, #336
-    add     r4, r6
-    mov     r6, #32
-    mul     r5, r8, r6
-    mov     r6, #88
-    add     r5, r6
-    mov     r6, #0
+	mov     r0, r7				//middle tile to cover
+	mov     r1, r8
+	bl      calcOffset
+	bl      drawBGTile
+	
+	mov     r0, r7				//left tile to cover
+	sub     r0, #1
+	cmp		r0, #0
+	blt     backRightTile
+	mov     r1, r8
+	bl      calcOffset
+	bl      drawBGTile
+	
+backRightTile:	
+	mov     r0, r7				//right tile to cover
+	add     r0, #1
+	cmp     r0, #17
+	bgt     topLeftTile
+	mov     r1, r8
+	bl      calcOffset
+	bl      drawBGTile
 
-printFLoop:
-    ldr     r0, =drawArgs
-    ldr     r1, =fTile
-    str     r1, [r0]
-    str     r4, [r0, #4]
-    str     r5, [r0, #8]
-    mov     r1, #64
-    str     r1, [r0, #12]
-    mov     r1, #32
-    str     r1, [r0, #16]
-    bl      drawImage
-    add     r4, #64
-    add     r6, #1
-    cmp     r6, #2
-    subeq   r4, #128
-    addeq   r5, #32
-    cmp     r6, #4
-    blt     printFLoop
+topLeftTile:	
+	mov     r0, r7				//top left tile
+	sub     r0, #1
+	cmp     r0, #0
+	blt     topMiddleTile
+	mov     r1, r8
+	sub     r1, #1
+	cmp     r1, #0
+	blt     topMiddleTile
+	bl      calcOffset
+	bl      drawBGTile
+	
+topMiddleTile:	
+	mov     r0, r7       		//top middle tile
+	mov     r1, r8
+	sub     r1, #1
+	cmp     r1, #0
+	blt     topRightTile
+	bl      calcOffset
+	bl      drawBGTile
+	
+topRightTile:	
+	mov     r0, r7				//top right tile
+	add     r0, #1
+	cmp     r0, #17
+	bgt     bottLeftTile
+	mov     r1, r8
+	sub     r1, #1
+	cmp     r1, #0
+	blt     bottLeftTile
+	bl      calcOffset
+	bl      drawBGTile
+	
+bottLeftTile:	
+	mov     r0, r7
+	sub     r0, #1
+	cmp     r0, #0
+	blt     bottMiddleTile
+	mov     r1, r8
+	add     r1, #1
+	cmp     r1, #27
+	bgt     bottMiddleTile
+	bl      calcOffset
+	bl      drawBGTile
 
+bottMiddleTile:	
+	mov     r0, r7
+	mov     r1, r8
+	add     r1, #1
+	cmp     r1, #27
+	bgt     bottRightTile
+	bl      calcOffset
+	bl      drawBGTile
+
+bottRightTile:	
+	mov     r0, r7
+	add     r0, #1
+	cmp     r0, #17
+	bgt     endBFTile
+	mov     r1, r8
+	add     r1, #1
+	cmp     r1, #27
+	bgt     endBFTile
+	bl      calcOffset
+	bl      drawBGTile
+	
+
+endBFTile:
     pop     {r4-r8, pc}
+    
 
-.global drawBGTile              //r0 = drawArgs ptr, r1 = x, r2 = y, r3 = tile ptr
+.global drawBGTile              //r1 = x, r2 = y
 drawBGTile:
     push    {lr}
+    ldr     r0, =drawArgs
+    ldr     r3, =fTile
     str     r3, [r0]
     str     r1, [r0, #4]
     str     r2, [r0, #8]
@@ -675,7 +570,228 @@ drawBGTile:
     mov     r1, #32
     str     r1, [r0, #16]
     bl      drawImage
-    pop     {pc}
+    pop     {pc}    
+    
+.global calcOffset
+calcOffset:
+    mov     r2, #18
+    mul     r3, r1, r2
+    add     r3, r0
+    add     r3, r3, lsl #3
+    
+    ldr     r0, =myArray
+    add     r0, r3
+    ldr     r1, [r0]
+    ldr     r2, [r0, #4]
+    
+    mov     pc, lr
+
+    
+.global movePaddle
+movePaddle:
+    push    {r4-r8, lr}
+
+    //check boundaries
+    
+
+    ldr     r0, =paddleStats    //load paddle stats
+    ldr     r4, [r0]            //load x coordinate
+    ldr     r5, [r0, #4]        //load speed
+    ldr     r6, [r0, #8]        //load if extended
+    cmp     r5, #0
+    beq     drawPaddly
+
+    bl      checkPaddleBound
+    mov     r7, r0
+    mov     r8, r1
+    bl      drawBackFloor
+    
+    cmp     r7, #1
+    beq     drawPaddleLeft
+    cmp     r8, #1
+    beq     drawPaddleRight
+
+ drawPaddly:
+    //bl      drawBackFloor   
+    add     r4, r5
+    ldr     r0, =paddleStats
+    str	    r4, [r0]
+    mov     r7, #0
+    str     r7, [r0, #4]
+    cmp     r6, #1
+    ldreq   r1, =exPaddle
+    ldrne   r1, =paddle
+
+    ldr     r0, =drawArgs
+    str     r1, [r0]
+    str     r4, [r0, #4]
+    mov     r1, #920
+    str     r1, [r0, #8]
+    movne   r1, #128
+    moveq   r1, #192
+    str     r1, [r0, #12]
+    mov     r1, #32
+    str     r1, [r0, #16]
+    bl      drawImage
+    b       endMovePad
+
+drawPaddleLeft:
+   
+    cmp     r6, #1
+    ldreq   r1, =exPaddle
+    ldrne   r1, =paddle
+    ldr     r0, =drawArgs
+    str     r1, [r0]
+    mov     r1, #336
+    str     r1, [r0, #4]
+    mov     r1, #920
+    str     r1, [r0, #8]
+    movne   r1, #128
+    moveq   r1, #192
+    str     r1, [r0, #12]
+    mov     r1, #32
+    str     r1, [r0, #16]
+    bl      drawImage
+    b       endMovePad
+
+drawPaddleRight:
+   
+    cmp     r6, #1
+    ldreq   r1, =exPaddle
+    ldrne   r1, =paddle
+    moveq   r2, #1296
+    movne   r2, #1360
+    ldr     r0, =drawArgs
+    str     r1, [r0]
+    str     r2, [r0, #4]
+    mov     r1, #920
+    str     r1, [r0, #8]
+    movne   r1, #128
+    moveq   r1, #192
+    str     r1, [r0, #12]
+    mov     r1, #32
+    str     r1, [r0, #16]
+    bl      drawImage
+
+endMovePad:
+    pop     {r4-r8, pc}
 
 
+.global checkPaddleBound
+checkPaddleBound:
+    push    {r4-r6, lr}
+
+    ldr     r2, =paddleStats
+    ldr     r3, [r2]            //load x coordinate
+    ldr     r4, [r2, #4]        //load the speed of the paddle
+    ldr     r5, [r2, #8]        //load if extened
+    add     r3, r4          	//update the ball position so we can tell if there is a colision
+    
+    mov     r0, #0
+    mov     r1, #0
+
+    mov     r6, #336
+    cmp     r3, r6
+    movle   r0, #1		//r0 = left collision boolean
+    strle   r6, [r2]
+    movle   r6, #0
+    strle   r6, [r2, #4]
+    ble     endCheckPadBound
+    
+
+    cmp     r5, #1
+    moveq   r6, #1328
+    movne   r6, #1360
+    cmp     r3, r6
+    movge   r1, #1		//r1 = right collision boolean
+    strge   r6, [r2]
+    movge   r6, #0
+    strge   r6, [r2, #4]
+
+endCheckPadBound:
+
+    pop     {r4-r6, pc}
+
+
+//.global drawPaddleBack
+drawBackFloor:
+    push    {r4-r7, lr}
+
+    ldr     r2, =paddleStats    //load paddle stats
+    ldr     r4, [r2]            //load x coordinate
+    ldr     r5, [r2, #4]
+    ldr     r6, [r2, #8]        //load if extended
+
+    cmp     r0, #1
+    beq     drawAtLeft
+    cmp     r1, #1
+    beq     drawAtRight
+
+    add     r4, r5
+    mov     r1, #336
+    sub     r4, r1              //x - left boundary, r4 becomes remaining pixels along x
+    mov     r7, #0              //r7 = x index
+    
+calcLoop:
+    cmp     r4, #63
+    subhi   r4, #64
+    addhi   r7, #1
+    bhi     calcLoop
+
+    mov     r1, #64
+    mul	    r4, r7, r1
+    mov     r1, #272
+    add     r4, r1
+    mov     r1, #336
+    cmp     r4, r1
+    movlt   r4, r1
+
+    cmp     r6, #1
+    moveq   r7, #6
+    movne   r7, #7
+    mov     r5, #0
+    b       drawBack
+
+drawAtLeft:
+    cmp     r6, #1
+    moveq   r4, #528
+    movne   r4, #464
+    mov     r7, #1
+    mov     r5, #0   	
+    b       drawBack
+
+drawAtRight:
+    cmp     r6, #1
+    moveq   r4, #1232
+    movne   r4, #1296
+    mov     r7, #1
+    mov     r5, #0
+
+drawBack:
+    //ldr     r0, =check
+    //mov     r1, r6
+    //bl      printf
+
+    ldr     r0, =drawArgs
+    ldr     r1, =fTile
+    str     r1, [r0]
+    str     r4, [r0, #4]		//x coordinate
+    mov     r1, #920                    //y coordinate
+    str     r1, [r0, #8]
+    mov     r1, #64                	//image width
+    str     r1, [r0, #12]
+    mov     r1, #32                 	//image height
+    str     r1, [r0, #16]
+    bl      drawImage
+    add     r4, #64
+    add     r5, #1
+    mov     r1, #1424
+    cmp     r4, r1
+    movgt   r5, r7
+    cmp     r5, r7
+    blt     drawBack   
+
+    pop     {r4-r7, pc}
+    
+        
 
