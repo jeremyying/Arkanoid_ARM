@@ -1,9 +1,14 @@
-/*  Cristhian Sotelo-Plaza
-    30004060
+/* Cristhian Sotelo-Plaza
+   30004060
+   Zheyu Jeremy Ying
+   30002931
+   Zachary Metz
+   30001506
 
-    SNES controller driver
- */
+   CPSC359 WINTER 2018
+   Assignment 4
 
+*/
 
 .section    .text
 
@@ -144,5 +149,3 @@ buttons:
 .global gpioBaseAddress
 gpioBaseAddress:
 .int    0
-
-

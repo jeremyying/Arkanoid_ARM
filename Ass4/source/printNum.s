@@ -1,8 +1,19 @@
+/* Cristhian Sotelo-Plaza
+   30004060
+   Zheyu Jeremy Ying
+   30002931
+   Zachary Metz
+   30001506
+
+   CPSC359 WINTER 2018
+   Assignment 4
+
+*/
 
 @ Code section
 .section .text
 
-.global printNum
+.global printNum //prints a character at x, y in specified colour
 printNum:
 	push    {r4-r10, lr}
 	mov 	r4, r0			@load value to print
@@ -15,60 +26,61 @@ printNum:
 	printLoop:
 		mov r10, #0
 		//check for a 100 digit
-		calcHundLoop:
-			cmp r5, #100
-			blt doneHundLoop
-			sub r5, #100
-			add r10, r10, #1
-			b calcHundLoop
-		doneHundLoop:
-			cmp r10, #0
-			beq	checkTen
-			add 	r0, r10, #48
-			mov 	r3, r8	//color
-			mov 	r1, r7		//y
-			mov 	r2, r6		//x
-			bl 	drawText
-			mul 	r5, r10, r9
-			sub	r4, r4, r5
-			mov 	r5, r4
-			add	r7, r7, #16
-
-			mov r10, #0
-
-		checkTen:
-			cmp 	r5, #10
-			blt	checkZero
-			sub 	r5, #10
-			add 	r10, r10, #1
-			b 	checkTen
-
-		checkZero:
-
+	calcHundLoop:
+		cmp r5, #100
+		blt doneHundLoop
+		sub r5, #100
+		add r10, r10, #1
+		b calcHundLoop
+	doneHundLoop:
+		cmp r10, #0
+		beq	checkTen
 		add 	r0, r10, #48
 		mov 	r3, r8	//color
 		mov 	r1, r7		//y
 		mov 	r2, r6		//x
 		bl 	drawText
-		mov	r9, #10
-
+		mul 	r5, r10, r9
 		sub	r4, r4, r5
+		mov 	r5, r4
 		add	r7, r7, #16
 
-	donePrint:
-		add 	r0, r5, #48
-		mov 	r3, r8	//color
-		mov 	r1, r7		//y
-		mov 	r2, r6		//x
-		bl 	drawText
+		mov r10, #0
 
-    		pop     {r4-r10, pc}
+	checkTen:
+		cmp 	r5, #10
+		blt	checkZero
+		sub 	r5, #10
+		add 	r10, r10, #1
+		b 	checkTen
+
+	checkZero:
+
+	add 	r0, r10, #48
+	mov 	r3, r8	//color
+	mov 	r1, r7		//y
+	mov 	r2, r6		//x
+	bl 	drawText
+	mov	r9, #10
+
+	sub	r4, r4, r5
+	add	r7, r7, #16
+
+donePrint:
+	add 	r0, r5, #48
+	mov 	r3, r8	//color
+	mov 	r1, r7		//y
+	mov 	r2, r6		//x
+	bl 	drawText
+
+  		pop     {r4-r10, pc}
 
 
 .global updateStats
 updateStats:
 		push    {r4-r10, lr}
 
+		//blacks out old score
 			mov     r5, #665        //x coordinate to blackout
 			mov     r6, #25        //y coordinate to blackout
 			mov     r7, #720         //max x
@@ -86,7 +98,7 @@ updateStats:
 			cmp     r6, r8
 			blt     blackoutUpdateScore
 
-
+		//blacks out old lives
 			mov     r5, #1225        //x coordinate to blackout
 			mov     r6, #25        //y coordinate to blackout
 			mov     r7, #1260         //max x
@@ -111,13 +123,13 @@ updateStats:
 		mov r5, #0xFFFFFFFF
 
 		//print the score
-
 		mov 	r0, r6			//character
 		mov 	r3, r5	//color
 		mov 	r1, #25	//y
 		mov 	r2, #665		//x
 		bl printNum
 
+		//print lives
 		mov 	r0, r4			//character
 		mov 	r3, r5		//color
 		mov 	r1, #25	//y

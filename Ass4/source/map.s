@@ -1,4 +1,14 @@
+/* Cristhian Sotelo-Plaza
+   30004060
+   Zheyu Jeremy Ying
+   30002931
+   Zachary Metz
+   30001506
 
+   CPSC359 WINTER 2018
+   Assignment 4
+
+*/
 @ Code section
 .section .text
 
@@ -19,10 +29,6 @@ gameMap:
     mov     sticky, #0
 
 play:
-
-    //mov     r0, #20000
-    //bl      delayMicroseconds
-
     ldr     r0, =destroyed
     ldr     r1, [r0]
     cmp     r1, #72 		//check if all blocks destroyed
@@ -43,11 +49,7 @@ play:
     cmp     r1, r2
     streq   r4, [r0, #4]
 
-    beq     continue
-
-    //ldr     r0, =attached
-    //mov     r4, #0
-    //str     r4, [r0]
+    beq     continue //no buttons pressed, continue draw/calculations cycle
 
     ldr     r0, =buttons
 
@@ -112,47 +114,50 @@ RPaddleMove:
 
 PauseMenuTrigger:
     bl      PauseMenuButtonCheck
+    /*PauseMenuButtonCheck returns an int in r0 based on user selections made inside the pause menu:
+      1 - Restart game
+      2 - Quit game
+      3 - Resume game */
 
     cmp	    r0, #1
-    beq     endPlay
+    beq     endPlay //restart
     cmp     r0, #2
-    beq     endPlay
+    beq     endPlay //quit game
     cmp     r0, #3
-    beq     continue
-
+    beq     continue //resume
 
 continue:
-	bl		checkCollisions
+	  bl		checkCollisions
     bl      drawGame
     bl      moveBall
     bl      movePaddle
-    
-    ldr		r0, =destroyed
-    ldr		r1, [r0]
-    cmp		r1, #1
+
+    ldr		  r0, =destroyed
+    ldr		  r1, [r0]
+    cmp		  r1, #20 //drop powerup after 20 destroyed
     ldreq   r0, =PowerUpBlock
     moveq   r1, #2
-    streq	r1, [r0, #8]
+    streq	  r1, [r0, #8] //type of powerup
     moveq   r1, #1
-    streq   r1, [r0, #12]
-    cmp		r1, #5
+    streq   r1, [r0, #12] //powerup on/off toggle
+    cmp		  r1, #40 //drop powerup after 40 destroyed
     ldreq   r0, =PowerUpBlock
     moveq   r1, #1
-    streq	r1, [r0, #8]
+    streq	  r1, [r0, #8] //type of powerup
     moveq   r1, #1
-    streq   r1, [r0, #12]
-    cmp		r1, #10
+    streq   r1, [r0, #12] //powerup on/off toggle
+    cmp		  r1, #60 //drop powerup after 60 destroyed
     ldreq   r0, =PowerUpBlock
     moveq   r1, #2
-    streq	r1, [r0, #8]
+    streq	  r1, [r0, #8] //type of powerup
     moveq   r1, #1
-    streq   r1, [r0, #12]
-    
-	ldr 	r0, =PowerUpBlock
-	ldr		r1, [r0, #12]
-	cmp		r1, #0
-	beq		skipPowerUp
-	bl      updatePowerup
+    streq   r1, [r0, #12] //powerup on/off toggle
+
+  	ldr    	r0, =PowerUpBlock
+  	ldr		  r1, [r0, #12] //powerup on/off toggle
+  	cmp		  r1, #0
+  	beq		  skipPowerUp
+  	bl      updatePowerup
 
 skipPowerUp:
     ldr     r0, =stickyPack
@@ -167,7 +172,6 @@ skipPowerUp:
 WinGame:
     mov     r0, #2
     push {r0}
-    // need to print win message
 
     ldr     r0, =drawArgs
     ldr     r1, =WinImage
@@ -188,7 +192,6 @@ LoseGame:
 
     mov     r0, #2
     push {r0}
-    // need to print lose message
 
     ldr     r0, =drawArgs
     ldr     r1, =LoseImage
@@ -209,11 +212,11 @@ PressToReturn:
   bl Read_SNES
   mov r2, #0xffff
   cmp r1, r2
-  beq PressToReturn
+  beq PressToReturn //waits for button input before exiting win/lose screens
 
   pop {r0}
 
-  endPlay:
+  endPlay: //re-initialize all parameters before restarting/exiting a game
     ldr r9, =lives
     mov r10, #5
     str r10, [r9] //reset Lives to 5 after ending a game

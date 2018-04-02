@@ -1,4 +1,14 @@
+/* Cristhian Sotelo-Plaza
+   30004060
+   Zheyu Jeremy Ying
+   30002931
+   Zachary Metz
+   30001506
 
+   CPSC359 WINTER 2018
+   Assignment 4
+
+*/
 @ Code section
 .section .text
 
@@ -66,15 +76,15 @@ ballStats:
 paddleStats:
     .int    0       //x coordinate
     .int    0       //x speed
-    .int    0       //extended paddle on
+    .int    0       //extended paddle, 1 - on, 0 - off
 
 .global attached
 attached:
-    .int    1       //flag for ball attached to paddle
+    .int    1       //flag for ball attached to paddle, 1 - attached, 0 - not attached
 
 .global stickyPack
 stickyPack:
-    .int    0       //active
+    .int    0       //1 - active, 0 - off
     .int    0       //moves left
 
 .global destroyed
@@ -87,4 +97,4 @@ lives:
 
 .global score
 score:
-  .int 0
+    .int    0

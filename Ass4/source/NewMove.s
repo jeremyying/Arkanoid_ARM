@@ -1,4 +1,16 @@
+/*	Cristhian Sotelo-Plaza
+	30004060
+	
+	Zheyu Jeremy Ying
+	30002931
+	
+	Zachary	Metz
+	30001506
+	
+	CPSC359 WINTER 2018
+	Assignment 4
 
+*/
 
 .global moveBall
 moveBall:
@@ -9,8 +21,6 @@ moveBall:
     ldr     r4, [r0]
     cmp     r4, #1
     beq     padBall         //branch to move ball on paddle speed
-
-    //bl      drawBFTile
 
     bl      padCollision
     cmp     r0, #1
@@ -24,41 +34,41 @@ moveBall:
     add     r4, r6
     add     r5, r7
 
-    mov     r1, #336
+    mov     r1, #336		//check left boundary
     cmp     r4, r1
     movle   r4, r1
-    negle   r6, r6
+    negle   r6, r6		//flip x speed to bounce ball off
     strle   r6, [r0, #8]
-    mov     r1, #1464
+    mov     r1, #1464		//check right boundary
     cmp     r4, r1
     movge   r4, r1
-    negge   r6, r6
+    negge   r6, r6		//flip x speed
     strge   r6, [r0, #8]
 
-    mov     r1, #88
+    mov     r1, #88		//check top boundary
     cmp     r5, r1
     movle   r5, r1
-    negle   r7, r7
+    negle   r7, r7		//flip y speed
     strle   r7, [r0, #12]
 
-    mov     r1, #960
+    mov     r1, #960		//check bottom boundary
     cmp     r5, r1
-    bge     loseLife
+    bge     loseLife		
 
-    str     r4, [r0]
+    str     r4, [r0]		//store new coordinates of ball
     str     r5, [r0, #4]
 
     b       drawBall
 
 loseLife:
-    ldr     r0, =lives
+    ldr     r0, =lives		//reduce life by one
     ldr     r1, [r0]
     sub     r1, #1
     str     r1, [r0]
     mov     r1, #1
-    ldr     r0, =attached
+    ldr     r0, =attached	//attach ball to paddle
     str     r1, [r0]
-    ldr     r0, =paddleStats
+    ldr     r0, =paddleStats	
     ldr     r4, [r0]
     ldr     r2, [r0, #4]
     add     r4, r2
@@ -68,7 +78,7 @@ loseLife:
     
     mov     r2, #52
     add     r4, r2
-    ldr     r0, =ballStats
+    ldr     r0, =ballStats	//set ball coordinates to be on top of paddle
     str     r4, [r0]
     mov     r5, #896
     str     r5, [r0, #4]
@@ -76,7 +86,7 @@ loseLife:
     b       drawBall
 
 padBall:
-	ldr     r0, =ballStats
+    ldr     r0, =ballStats
     ldr     r4, [r0]
     ldr     r5, [r0, #4]
     mov     r1, #336
@@ -307,13 +317,13 @@ checkCollisions:
     subgt   r3, #1
     strgtb  r3, [r0, #8]
     cmp	    r3, #0
-    ldreq   r0, =destroyed
+    ldreq   r0, =destroyed	//increase number of bricks destroyed
     ldreq   r1, [r0]
     addeq   r1, #1
     streq   r1, [r0]
     b       firstFlip
 
-checkInside:
+checkInside:			//check if ball completely inside current tile
     cmp     r4, #40
     movge   r9, #1
     bge     checkRight
@@ -323,7 +333,7 @@ checkInside:
     b       checkBottom
 
 firstFlip:
-    ldr     r0, =ballStats
+    ldr     r0, =ballStats	//flip speed
     ldr     r1, [r0, #8]
     ldr     r2, [r0, #12]
     neg     r1, r1
@@ -696,7 +706,7 @@ movePaddle:
     bl      drawImage
     b       endMovePad
 
-drawPaddleLeft:
+drawPaddleLeft:			//draw paddle on left boundary
 
     cmp     r6, #1
     ldreq   r1, =exPaddle

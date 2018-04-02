@@ -1,3 +1,17 @@
+/*	Cristhian Sotelo-Plaza
+	30004060
+	
+	Zheyu Jeremy Ying
+	30002931
+	
+	Zachary	Metz
+	30001506
+	
+	CPSC359 WINTER 2018
+	Assignment 4
+
+*/
+
 
 @ Code section
 .section .text
