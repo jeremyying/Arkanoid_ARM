@@ -76,35 +76,52 @@ loseLife:
     b       drawBall
 
 padBall:
-
+	ldr     r0, =ballStats
+    ldr     r4, [r0]
+    ldr     r5, [r0, #4]
+    mov     r1, #336
+    cmp     r4, r1
+    moveq   r4, r1
+    mov     r1, #1464
+    cmp     r5, r1
+    moveq   r5, r1
+    
     ldr     r0, =paddleStats
-    ldr     r1, [r0, #4]		    //load paddle speed
-    ldr     r2, [r0]
+    ldr     r1, [r0]		    //load paddle x coordinate
+    ldr     r2, [r0, #4]
+    sub     r6, r4, r1			//paddle-ball offset
+    add     r1, r2
     
     mov     r3, #336
-    cmp     r1, r2
-    ble     padBallNext
+    cmp     r1, r3
+    ldrle   r0, =ballStats
+    movle   r1, #0
+    strle   r1, [r0, #8]
+    addle   r6, r3
+    strle   r6, [r0]  
+    ble     drawBall
+    
     ldr     r3, [r0, #8]         //load extended paddle
     cmp     r3, #1
     moveq   r3, #1296
     movne   r3, #1360
-    cmp     r1, r2
-    bge     padBallNext
+    cmp     r1, r3
+    ldrge   r0, =ballStats
+    movge   r1, #0
+    strge   r1, [r0, #8]
+    addge   r6, r3
+    strge   r6, [r0]
+    bge     drawBall
     
     ldr     r0, =ballStats
     ldr     r4, [r0]                //set ball speed to paddle speed
-    add     r4, r1
+    add     r4, r2
     str     r4, [r0]
     mov     r1, #0
     str     r1, [r0, #8]
     str     r1, [r0, #12]
     mov     r5, #896
 	b       drawBall
-
-padBallNext:
-	ldr     r0, =ballStats
-    ldr     r4, [r0]
-    ldr     r5, [r0, #4]
 
 drawBall:
     ldr     r0, =drawArgs
@@ -266,7 +283,7 @@ endPadCo:
 
 .global checkCollisions
 checkCollisions:
-    push    {r4-r9, lr}
+    push    {r4-r10, lr}
 
     bl      calcXYIndex
     mov     r4, r0              //x remaining pixels
@@ -277,6 +294,12 @@ checkCollisions:
     mov     r0, r7
     mov     r1, r8
     bl      calcOffset
+    
+    ldr 	r10, =PowerUpBlock
+    ldr 	r3, [r10, #12]
+    cmp     r3, #0
+    streq 	r1, [r10]
+    streq 	r2, [r10, #4]
 
     ldrb    r3, [r0, #8]        //r3 = hardness of tile
     cmp     r3, #0
@@ -309,14 +332,6 @@ firstFlip:
     strge   r1, [r0, #8]
     strlt   r2, [r0, #12]
 
-    //Jeremy Code
-    ldr r1, [r0] //load ball x
-    ldr r2, [r0, #4] //load ball y
-    ldr r0, =PowerUpBlock
-    str r1, [r0]
-    str r2, [r0, #4]
-    //Jeremy Code
-
     ldr	    r0, =score
     ldr     r1, [r0]
     add     r1, #1
@@ -330,6 +345,14 @@ checkRight:
     mov     r0, r7
     mov     r1, r8
     bl      calcOffset
+    
+    ldr 	r10, =PowerUpBlock
+    ldr 	r3, [r10, #12]
+    cmp     r3, #0
+    streq 	r1, [r10]
+    streq 	r2, [r10, #4]
+    moveq   r3, #1
+    
 
     ldrb    r3, [r0, #8]            //r3 = hardness of tile
     cmp     r3, #0
@@ -348,14 +371,6 @@ secFlip:
     neg     r1, r1
     str     r1, [r0, #8]
 
-    //Jeremy Code
-    ldr r1, [r0] //load ball x
-    ldr r2, [r0, #4] //load ball y
-    ldr r0, =PowerUpBlock
-    str r1, [r0]
-    str r2, [r0, #4]
-    //Jeremy Code
-
     ldr	    r0, =score
     ldr     r1, [r0]
     add     r1, #1
@@ -372,6 +387,12 @@ checkBottom:
     mov     r0, r7
     mov     r1, r8
     bl      calcOffset
+    
+    ldr 	r10, =PowerUpBlock
+    ldr 	r3, [r10, #12]
+    cmp     r3, #0
+    streq 	r1, [r10]
+    streq 	r2, [r10, #4]
 
     ldrb    r3, [r0, #8]            //r3 = hardness of tile
     cmp     r3, #0
@@ -390,14 +411,6 @@ thirdFlip:
     neg     r1, r1
     str     r1, [r0, #12]
 
-    //Jeremy Code
-    ldr r1, [r0] //load ball x
-    ldr r2, [r0, #4] //load ball y
-    ldr r0, =PowerUpBlock
-    str r1, [r0]
-    str r2, [r0, #4]
-    //Jeremy Code
-
     ldr	    r0, =score
     ldr     r1, [r0]
     add     r1, #1
@@ -412,6 +425,12 @@ checkLast:
     mov     r0, r7
     mov     r1, r8
     bl      calcOffset
+    
+    ldr 	r10, =PowerUpBlock
+    ldr 	r3, [r10, #12]
+    cmp     r3, #0
+    streq 	r1, [r10]
+    streq 	r2, [r10, #4]
 
     ldrb    r3, [r0, #8]            //r3 = hardness of tile
     cmp     r3, #0
@@ -434,21 +453,13 @@ lastFlip:
     strne   r1, [r0, #8]
     streq   r2, [r0, #12]
 
-    //Jeremy Code
-    ldr r1, [r0] //load ball x
-    ldr r2, [r0, #4] //load ball y
-    ldr r0, =PowerUpBlock
-    str r1, [r0]
-    str r2, [r0, #4]
-    //Jeremy Code
-
     ldr	    r0, =score
     ldr     r1, [r0]
     add     r1, #1
     str     r1, [r0]
 
 endCheckCo:
-    pop     {r4-r9, pc}
+    pop     {r4-r10, pc}
 
 .global drawBFTile              //r0 = drawArgs ptr, r1 = x, r2 = y, r3 = tile ptr
 drawBFTile:
@@ -472,6 +483,8 @@ drawBFTile:
 	blt     backRightTile
 	mov     r1, r8
 	bl      calcOffset
+	cmp     r3, #0
+	bgt     backRightTile
 	bl      drawBGTile
 	
 backRightTile:
@@ -481,12 +494,10 @@ backRightTile:
 	bgt     topLeftTile
 	mov     r1, r8
 	bl      calcOffset
+	cmp     r3, #0
+	bgt     topLeftTile
 	bl      drawBGTile
 		
-	ldr     r0, =ballStats
-	ldr     r1, [r0, #12]
-	cmp     r1, #0
-	blt     bottLeftTile 
 
 topLeftTile:
 	mov     r0, r7				//top left tile
@@ -498,6 +509,8 @@ topLeftTile:
 	cmp     r1, #0
 	blt     topMiddleTile
 	bl      calcOffset
+	cmp     r3, #0
+	bgt     topMiddleTile
 	bl      drawBGTile
 
 topMiddleTile:
@@ -507,6 +520,8 @@ topMiddleTile:
 	cmp     r1, #0
 	blt     topRightTile
 	bl      calcOffset
+	cmp     r3, #0
+	bgt     topRightTile
 	bl      drawBGTile
 
 topRightTile:
@@ -519,12 +534,10 @@ topRightTile:
 	cmp     r1, #0
 	blt     bottLeftTile
 	bl      calcOffset
+	cmp     r3, #0
+	bgt     bottLeftTile
 	bl      drawBGTile
 	
-	ldr     r0, =ballStats
-	ldr     r1, [r0, #12]
-	cmp     r1, #0
-	bgt     endBFTile 
 
 bottLeftTile:
 	mov     r0, r7
@@ -536,6 +549,8 @@ bottLeftTile:
 	cmp     r1, #27
 	bgt     bottMiddleTile
 	bl      calcOffset
+	cmp     r3, #0
+	bgt     bottMiddleTile
 	bl      drawBGTile
 
 bottMiddleTile:
@@ -545,6 +560,8 @@ bottMiddleTile:
 	cmp     r1, #27
 	bgt     bottRightTile
 	bl      calcOffset
+	cmp     r3, #0
+	bgt     bottRightTile
 	bl      drawBGTile
 
 bottRightTile:
@@ -557,6 +574,8 @@ bottRightTile:
 	cmp     r1, #27
 	bgt     endBFTile
 	bl      calcOffset
+	cmp     r3, #0
+	bgt     endBFTile
 	bl      drawBGTile
 
 
@@ -577,12 +596,12 @@ calcXYIndex:
     mov     r7, #0              //r7 = x index
     mov     r8, #0              //r8 = y index
 
-    calcXLoop:
+calcXLoop:
     cmp     r4, #63
     subhi   r4, #64
     addhi   r7, #1
     bhi     calcXLoop
-    calcYLoop:
+calcYLoop:
     cmp     r5, #31
     subhi   r5, #32
     addhi   r8, #1
@@ -624,6 +643,7 @@ calcOffset:
     add     r0, r3
     ldr     r1, [r0]
     ldr     r2, [r0, #4]
+    ldrb    r3, [r0, #8]
 
     mov     pc, lr          //returns r0 = myArray+offset, r1 = x coordinte, r2 = y coordinate
 
@@ -640,7 +660,7 @@ movePaddle:
     ldr     r5, [r0, #4]        //load speed
     ldr     r6, [r0, #8]        //load if extended
     cmp     r5, #0
-    beq     drawPaddly
+    //beq     drawPaddly
 
     bl      checkPaddleBound
     mov     r7, r0

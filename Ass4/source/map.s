@@ -41,7 +41,7 @@ play:
     ldr     r3, =paddleStats
     mov     r4, #0
     cmp     r1, r2
-    streq   r4, [r0, #4] //set paddle speed 0
+    streq   r4, [r0, #4]
 
     beq     continue
 
@@ -77,15 +77,15 @@ DetachBall:
     ldr     r0, =attached
     ldr     r1, [r0]
     cmp     r1, #0
-    beq     continue //continue if ball's not attached
+    beq     continue
     mov     r1, #0
-    str     r1, [r0] //turn of attached if on
+    str     r1, [r0]
     ldr     r0, =stickyPack
     ldr     r1, [r0]
-    cmp     r1, #1 //check if stiky's active
+    cmp     r1, #1
     moveq   sticky, r1
     moveq   r1, #0
-    streq   r1, [r0] //turn sticky off
+    streq   r1, [r0]
     b       continue
 
 LPaddleMove:
@@ -112,28 +112,49 @@ RPaddleMove:
 
 PauseMenuTrigger:
     bl      PauseMenuButtonCheck
-    /*PauseMenuButtonCheck returns an int in r0 based on user selections made inside the pause menu:
-          1 - Restart game
-          2 - Quit game
-          3 - Resume game */
 
     cmp	    r0, #1
-    beq     endPlay //restart game flag
+    beq     endPlay
     cmp     r0, #2
-    beq     endPlay //quit game flag
+    beq     endPlay
     cmp     r0, #3
-    beq     continue //resume game flag
+    beq     continue
 
 
 continue:
-	  bl		  checkCollisions
+	bl		checkCollisions
     bl      drawGame
     bl      moveBall
     bl      movePaddle
+    
+    ldr		r0, =destroyed
+    ldr		r1, [r0]
+    cmp		r1, #1
+    ldreq   r0, =PowerUpBlock
+    moveq   r1, #2
+    streq	r1, [r0, #8]
+    moveq   r1, #1
+    streq   r1, [r0, #12]
+    cmp		r1, #5
+    ldreq   r0, =PowerUpBlock
+    moveq   r1, #1
+    streq	r1, [r0, #8]
+    moveq   r1, #1
+    streq   r1, [r0, #12]
+    cmp		r1, #10
+    ldreq   r0, =PowerUpBlock
+    moveq   r1, #2
+    streq	r1, [r0, #8]
+    moveq   r1, #1
+    streq   r1, [r0, #12]
+    
+	ldr 	r0, =PowerUpBlock
+	ldr		r1, [r0, #12]
+	cmp		r1, #0
+	beq		skipPowerUp
+	bl      updatePowerup
 
-//    bl checkPowerUp //Spawn PowerUp
-  //  bl updatePowerup //Updates Spawned PowerUp
-
+skipPowerUp:
     ldr     r0, =stickyPack
     cmp     sticky, #1
     streq   sticky, [r0]
@@ -184,7 +205,7 @@ LoseGame:
 
     b PressToReturn
 
-PressToReturn: //wait for button input
+PressToReturn:
   bl Read_SNES
   mov r2, #0xffff
   cmp r1, r2
@@ -192,7 +213,7 @@ PressToReturn: //wait for button input
 
   pop {r0}
 
-  endPlay: //re initialize all global variables before returning to main
+  endPlay:
     ldr r9, =lives
     mov r10, #5
     str r10, [r9] //reset Lives to 5 after ending a game

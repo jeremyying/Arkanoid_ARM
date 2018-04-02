@@ -65,7 +65,7 @@ pulseLoop:
 
     .unreq  i_r
 
-    ldr     r0, =#10000
+    ldr     r0, =#5000
     bl      delayMicroseconds
 
 
