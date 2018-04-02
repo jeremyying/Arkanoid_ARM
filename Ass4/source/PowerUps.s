@@ -24,6 +24,8 @@ BlackoutPowerUp:
   bl      calcXYIndex
   mov     r4, r0
   mov     r5, r1
+  mov r7, r2
+  mov r8, r3
 
   mov     r0, r2				//middle tile to cover
   mov     r1, r3
@@ -32,13 +34,14 @@ BlackoutPowerUp:
 
   mov     r0, r7				//left tile to cover
   sub     r0, #1
-  cmp		r0, #0
-  blt     backRightTile
+  //cmp		  r0, #0
+  //blt     backRightTile
   mov     r1, r8
   bl      calcOffset
   bl      drawBGTile
 
-
+  ldr r4, =PowerUpBlock
+  ldr r5, [r4, #8]
   cmp r5, #1 //check PowerUp type
   ldreq r1, =XPower
   cmp r5, #2

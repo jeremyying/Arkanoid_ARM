@@ -198,8 +198,8 @@ continuePadCo:
     ldr     r0, =paddleStats
     ldr     r1, [r0, #8]
     cmp     r1, #1
-    moveq   r2, #60             //if extended paddle on, use 48 to calc place of ball on paddle
-    movne   r2, #44
+    moveq   r2, #57             //if extended paddle on, use 48 to calc place of ball on paddle
+    movne   r2, #38
 
     ldr     r0, =ballStats
     sub     r7, r2
@@ -253,8 +253,8 @@ checkCollisions:
     bl      calcXYIndex
     mov     r4, r0              //x remaining pixels
     mov     r5, r1              //y remaining pixels
-    mov     r7, r2
-    mov     r8, r3
+    mov     r7, r2				//x index
+    mov     r8, r3				//y index
 
     mov     r0, r7
     mov     r1, r8
@@ -437,8 +437,11 @@ drawBFTile:
     push    {r4-r8, lr}
 
     bl      calcXYIndex
-    mov     r4, r0
-    mov     r5, r1
+    mov     r4, r0				//x remaining pixels
+    mov     r5, r1				//y remaining pixels
+    mov     r7, r2				//x index
+    mov     r8, r3				//y index
+   
 
 	mov     r0, r2				//middle tile to cover
 	mov     r1, r3
@@ -452,7 +455,7 @@ drawBFTile:
 	mov     r1, r8
 	bl      calcOffset
 	bl      drawBGTile
-
+	
 backRightTile:
 	mov     r0, r7				//right tile to cover
 	add     r0, #1
@@ -461,6 +464,11 @@ backRightTile:
 	mov     r1, r8
 	bl      calcOffset
 	bl      drawBGTile
+		
+	/* ldr     r0, =ballStats
+	ldr     r1, [r0, #12]
+	cmp     r1, #0
+	blt     bottLeftTile */
 
 topLeftTile:
 	mov     r0, r7				//top left tile
@@ -494,6 +502,11 @@ topRightTile:
 	blt     bottLeftTile
 	bl      calcOffset
 	bl      drawBGTile
+	
+	/* ldr     r0, =ballStats
+	ldr     r1, [r0, #12]
+	cmp     r1, #0
+	bgt     endBFTile */
 
 bottLeftTile:
 	mov     r0, r7

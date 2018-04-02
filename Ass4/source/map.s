@@ -127,8 +127,8 @@ continue:
     bl      moveBall
     bl      movePaddle
 
-    bl checkPowerUp //Spawn PowerUp
-    bl updatePowerup //Updates Spawned PowerUp
+//    bl checkPowerUp //Spawn PowerUp
+  //  bl updatePowerup //Updates Spawned PowerUp
 
     ldr     r0, =stickyPack
     cmp     sticky, #1
