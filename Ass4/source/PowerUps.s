@@ -20,7 +20,8 @@ DrawPowerUp:
   cmp r6, #0
   beq endDraw //Skip if Display toggle is off
 
-BlackoutPowerUp:
+
+/*BlackoutPowerUp:
   bl      calcXYIndex
   mov     r4, r0
   mov     r5, r1
@@ -38,7 +39,18 @@ BlackoutPowerUp:
   //blt     backRightTile
   mov     r1, r8
   bl      calcOffset
-  bl      drawBGTile
+  bl      drawBGTile*/
+
+  ldr r7, [r4] //PowerUp X
+  ldr r8, [r4, #4] //PowerUp Y
+  sub r7, #8 //align 48x48 powerup with 64x32 tiles
+
+  mov r1, r7
+  mov r2, r8
+  bl drawBGTile
+
+
+
 
   ldr r4, =PowerUpBlock
   ldr r5, [r4, #8]
@@ -85,8 +97,8 @@ updatePowerup:
   addlt r2, #5 //Set y of PowerUp to new Position
   strlt r2, [r0, #4] //store new y
 
-  movge r3, #0 //turn off display flag
-  strge r3, [r0, #12]
+  //movge r3, #0 //turn off display flag
+  //strge r3, [r0, #12]
   bgt updatePowerupReturn
 
   ldr r4, [r1] //load the x of the paddle
@@ -113,8 +125,10 @@ updatePowerup:
   bne StickyPowerUp
 
   ExtendPowerUp:
-    mov r4, #2
-    str r4, [r0, #8] //change Powerup to Sticky
+    /*ldr r6, [r0, #12]
+    cmp r6, #0
+    moveq r4, #2
+    streq r4, [r0, #8] //change Powerup to Sticky*/
 
     mov r4, #1
     str r4, [r1, #8] //extend paddle on
@@ -122,8 +136,8 @@ updatePowerup:
     b updatePowerupReturn
 
   StickyPowerUp:
-    mov r4, #1
-    str r4, [r0, #8] //change Powerup to extend paddle
+    /*mov r4, #1
+    str r4, [r0, #8] //change Powerup to extend paddle*/
 
     ldr r4, =stickyPack
     mov r5, #1
@@ -134,6 +148,23 @@ updatePowerup:
     b updatePowerupReturn
 
 updatePowerupReturn:
+  ldr r0, =PowerUpBlock
+  ldr r1, [r0, #4] //PowerUpBlock Y coord
+  ldr r2, [r0, #8] //PowerUp Type
+  ldr r3, [r0, #12] //PowerUp Display
+  mov r10, r3 //copy display value
+  cmp r1, #920
+  movgt r3, #0 //display PowerUp off if out of bounds
+
+  cmp r3, r10
+  beq SkipPowerUpChange
+
+  cmp r2, #1
+  moveq r2, #2 //set PowerUp type to 2 if 1
+  movgt r2, #1 //set PowerUp type to 1 if 2
+  str r2, [r0, #8] //store powerup type
+
+SkipPowerUpChange:
   pop {r4-r10, pc}
 
 //spawn powerUP
