@@ -47,7 +47,7 @@ DrawPowerUp:
 
   mov r1, r7
   mov r2, r8
-  bl drawBGTile
+  bl drawBGTile //draw background tile
 
 
 

@@ -7,7 +7,6 @@ moveBall:
 
     ldr     r0, =attached
     ldr     r4, [r0]
-
     cmp     r4, #1
     beq     padBall         //branch to move ball on paddle speed
 
@@ -63,10 +62,11 @@ loseLife:
     ldr     r4, [r0]
     ldr     r2, [r0, #4]
     add     r4, r2
-    ldr     r2, [r0, #8]
-    cmp     r2, #1
-    moveq   r2, #84
-    movne   r2, #52
+    
+    mov     r2, #0
+    str     r2, [r0, #8]
+    
+    mov     r2, #52
     add     r4, r2
     ldr     r0, =ballStats
     str     r4, [r0]
@@ -78,7 +78,19 @@ loseLife:
 padBall:
 
     ldr     r0, =paddleStats
-    ldr     r1, [r0, #4]		    //load paddle x coordinate
+    ldr     r1, [r0, #4]		    //load paddle speed
+    ldr     r2, [r0]
+    
+    mov     r3, #336
+    cmp     r1, r2
+    ble     padBallNext
+    ldr     r3, [r0, #8]         //load extended paddle
+    cmp     r3, #1
+    moveq   r3, #1296
+    movne   r3, #1360
+    cmp     r1, r2
+    bge     padBallNext
+    
     ldr     r0, =ballStats
     ldr     r4, [r0]                //set ball speed to paddle speed
     add     r4, r1
@@ -87,6 +99,12 @@ padBall:
     str     r1, [r0, #8]
     str     r1, [r0, #12]
     mov     r5, #896
+	b       drawBall
+
+padBallNext:
+	ldr     r0, =ballStats
+    ldr     r4, [r0]
+    ldr     r5, [r0, #4]
 
 drawBall:
     ldr     r0, =drawArgs
@@ -465,10 +483,10 @@ backRightTile:
 	bl      calcOffset
 	bl      drawBGTile
 		
-	/* ldr     r0, =ballStats
+	ldr     r0, =ballStats
 	ldr     r1, [r0, #12]
 	cmp     r1, #0
-	blt     bottLeftTile */
+	blt     bottLeftTile 
 
 topLeftTile:
 	mov     r0, r7				//top left tile
@@ -503,10 +521,10 @@ topRightTile:
 	bl      calcOffset
 	bl      drawBGTile
 	
-	/* ldr     r0, =ballStats
+	ldr     r0, =ballStats
 	ldr     r1, [r0, #12]
 	cmp     r1, #0
-	bgt     endBFTile */
+	bgt     endBFTile 
 
 bottLeftTile:
 	mov     r0, r7
@@ -723,7 +741,7 @@ checkPaddleBound:
 
 
     cmp     r5, #1
-    moveq   r6, #1328
+    moveq   r6, #1296
     movne   r6, #1360
     cmp     r3, r6
     movge   r1, #1		//r1 = right collision boolean

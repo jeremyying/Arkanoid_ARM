@@ -10,7 +10,7 @@ main:
 
     bl init_SNES
 
-    bl      mainMenu
+    bl      mainMenu //calls the main menu
 
 
 
@@ -18,7 +18,8 @@ main:
 	@ stop
 	haltLoop$:
 		b	haltLoop$
-
+
+
 @ Data section
 .section .data
 

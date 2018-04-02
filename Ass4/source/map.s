@@ -13,7 +13,7 @@ gameMap:
     bl      updateStats
 
     APressed .req r10
-    sticky  .req r9
+    sticky   .req r9
 
     mov     APressed, #0
     mov     sticky, #0
@@ -41,13 +41,13 @@ play:
     ldr     r3, =paddleStats
     mov     r4, #0
     cmp     r1, r2
-    streq   r4, [r0, #4]
+    streq   r4, [r0, #4] //set paddle speed 0
 
     beq     continue
 
-    ldr     r0, =attached
-    mov     r4, #0
-    str     r4, [r0]
+    //ldr     r0, =attached
+    //mov     r4, #0
+    //str     r4, [r0]
 
     ldr     r0, =buttons
 
@@ -77,15 +77,15 @@ DetachBall:
     ldr     r0, =attached
     ldr     r1, [r0]
     cmp     r1, #0
-    beq     continue
+    beq     continue //continue if ball's not attached
     mov     r1, #0
-    str     r1, [r0]
+    str     r1, [r0] //turn of attached if on
     ldr     r0, =stickyPack
     ldr     r1, [r0]
-    cmp     r1, #1
+    cmp     r1, #1 //check if stiky's active
     moveq   sticky, r1
     moveq   r1, #0
-    streq   r1, [r0]
+    streq   r1, [r0] //turn sticky off
     b       continue
 
 LPaddleMove:
@@ -112,17 +112,21 @@ RPaddleMove:
 
 PauseMenuTrigger:
     bl      PauseMenuButtonCheck
+    /*PauseMenuButtonCheck returns an int in r0 based on user selections made inside the pause menu:
+          1 - Restart game
+          2 - Quit game
+          3 - Resume game */
 
     cmp	    r0, #1
-    beq     endPlay
+    beq     endPlay //restart game flag
     cmp     r0, #2
-    beq     endPlay
+    beq     endPlay //quit game flag
     cmp     r0, #3
-    beq     continue
+    beq     continue //resume game flag
 
 
 continue:
-	bl		checkCollisions
+	  bl		  checkCollisions
     bl      drawGame
     bl      moveBall
     bl      movePaddle
@@ -180,7 +184,7 @@ LoseGame:
 
     b PressToReturn
 
-PressToReturn:
+PressToReturn: //wait for button input
   bl Read_SNES
   mov r2, #0xffff
   cmp r1, r2
@@ -188,7 +192,7 @@ PressToReturn:
 
   pop {r0}
 
-  endPlay:
+  endPlay: //re initialize all global variables before returning to main
     ldr r9, =lives
     mov r10, #5
     str r10, [r9] //reset Lives to 5 after ending a game

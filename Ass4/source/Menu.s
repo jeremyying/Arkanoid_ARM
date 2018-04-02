@@ -7,18 +7,18 @@ mainMenu:
     push    {r4-r8, lr}
 
 menu:
-    bl      displayMenu
-    mov     r4, #0
+    bl      displayMenu //Prints the Main Menu
+    mov     r4, #0 //reset options flag to 0
 
-waitLoop:
+waitLoop: //check for button input
     bl      Read_SNES
     mov     r2, #0xffff     //no buttons pressed
     cmp     r1, r2
     beq     waitLoop
 
-    ldrb    r2, [r0, #8]    //check A button, index button #-1
+    ldrb    r2, [r0, #8]    //check A button, index button #1
     cmp     r2, #0
-    beq     pickOption
+    beq     pickOption //A pressed
     ldrb    r2, [r0, #4]    //check UP button
     cmp     r2, #0
     moveq   r4, #0
@@ -31,32 +31,32 @@ waitLoop:
 
 pickOption:
     cmp     r4, #1
-    beq     endMenu
+    beq     endMenu //quits game if 1
 
 startGame:
     bl      gameMap         //start game
     cmp     r0, #1
-    beq     startGame       //restart game, from pause menu
+    beq     startGame       //restart game
     cmp     r0, #2
-    beq       menu
+    beq       menu  //go back to main menu
 
 drawArrow:
     mov     r5, #744        //x coordinate to blackout
     mov     r6, #678        //y coordinate to blackout
-    mov     r7, #780         //max x
-    mov     r8, #783        //max y
+    mov     r7, #780         //max x coord
+    mov     r8, #783        //max y coord
 
 blackout:
     mov     r0, r5
     mov     r1, r6
-    mov     r2, #0xFF000000
-    bl      DrawPixel
-    add     r5, #1
-    teq     r5, r7
-    moveq   r5, #744
-    addeq   r6, #1
+    mov     r2, #0xFF000000 //black colour
+    bl      DrawPixel //draws pixel, using x, y, colour //draws pixel, using x, y, colour
+    add     r5, #1 //increment x
+    teq     r5, r7 //check if x = max x
+    moveq   r5, #744 //reset x
+    addeq   r6, #1 //increment y
     cmp     r6, r8
-    blt     blackout
+    blt     blackout //exit loop if y = max y
 
     cmp     r4, #1
     moveq   r5, #744		//x coordinate of arrow on quit
@@ -65,7 +65,7 @@ blackout:
     movne   r6, #678        	//y coordinate of arrow on start
 
     ldr     r0, =drawArgs
-    ldr     r1, =arrow
+    ldr     r1, =arrow //pointer for arrow image
     str     r1, [r0]
     mov     r1, r5           	//x coordinate of arrow
     str     r1, [r0, #4]
@@ -75,10 +75,10 @@ blackout:
     str     r1, [r0, #12]
     mov     r1, #45           	//height of arrow image
     str     r1, [r0, #16]
-    bl      drawImage
+    bl      drawImage //draw arrow
     b       waitLoop
 
-endMenu:
+endMenu: //blacks out the game screen, returns to main
     mov     r4, #0
     mov     r5, #24
     mov     r6, #1824
@@ -88,7 +88,7 @@ endMenuLoop:
     mov     r0, r4
     mov     r1, r5
     mov     r2, #0xFF000000
-    bl      DrawPixel
+    bl      DrawPixel //draws pixel, using x, y, colour
     add     r4, #1
     teq     r4, r6
     moveq   r4, #0
@@ -96,13 +96,13 @@ endMenuLoop:
     cmp     r5, r7
     blt     endMenuLoop
 
-
-    pop     {r4-r8, pc}
+    pop     {r4-r8, pc} //ret to main
 
 .global displayMenu
 displayMenu:
     push    {r4-r7, lr}
 
+//blacks out the area for the game screen
     mov     r4, #0
     mov     r5, #24
     mov     r6, #1824
@@ -112,7 +112,7 @@ blackLoop:
     mov     r0, r4
     mov     r1, r5
     mov     r2, #0xFF000000
-    bl      DrawPixel
+    bl      DrawPixel //draws pixel, using x, y, colour
     add     r4, #1
     teq     r4, r6
     moveq   r4, #0
@@ -134,7 +134,7 @@ blackLoop:
     str     r1, [r0, #16]
     bl      drawImage
 
-NamesPrint:
+NamesPrint: //prints the creator names
     ldr     r0, =drawArgs
     ldr     r1, =creator
     str     r1, [r0]
@@ -148,7 +148,7 @@ NamesPrint:
     str     r1, [r0, #16]
     bl      drawImage
 
-MainMenuSelectionPrint:
+MainMenuSelectionPrint: //prints the options on the main menu
     ldr     r0, =drawArgs
     ldr     r1, =menuOpts
     str     r1, [r0]
@@ -162,7 +162,7 @@ MainMenuSelectionPrint:
     str     r1, [r0, #16]
     bl      drawImage
 
-MainMenuArrowPrint:
+MainMenuArrowPrint: //prints the arrow at initial position (start game)
     ldr     r0, =drawArgs
     ldr     r1, =arrow
     str     r1, [r0]
@@ -221,13 +221,12 @@ MainMenuArrowPrint:
       bl PauseMenuPrint //prints PauseMenu and arrow
 
       ArrowPosition .req r10
-      mov ArrowPosition, #1
+      mov ArrowPosition, #1 //init arrow on Restart game
 
-    PauseMenuLoop:
+    PauseMenuLoop: //check for button input
       bl Read_SNES
       mov r2, #0xffff //no buttons are pressed
       cmp r1, r2
-
 
       beq PauseMenuLoop
 
@@ -272,7 +271,7 @@ MainMenuArrowPrint:
       mov     r0, r6
       mov     r1, r7
       mov     r2, #0xFF000000
-      bl      DrawPixel
+      bl      DrawPixel //draws pixel, using x, y, colour
       add     r6, #1
       teq     r6, r8
       moveq   r6, #784
@@ -283,7 +282,7 @@ MainMenuArrowPrint:
 
     PauseMenuDrawArrow:
       ldr r0, =drawArgs
-      ldr r1, =arrow
+      ldr r1, =arrow //arrow image pointer
       str r1, [r0]
       mov r1, r4 //x coord of PauseArrow
       str r1, [r0, #4]
@@ -326,7 +325,3 @@ MainMenuArrowPrint:
       mov r0, ArrowPosition //return int 1 (Restart), 2 (Quit), or 3 (Resume)
       .unreq ArrowPosition
       pop {r4-r10, pc} //return
-
-
-
-
