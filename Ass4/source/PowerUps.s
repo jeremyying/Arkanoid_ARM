@@ -95,7 +95,7 @@ updatePowerup:
     str r4, [r0, #8] //change Powerup to Sticky
 
   StickyPowerUp:
-    mov r4, =stickyPack
+    ldr r4, =stickyPack
     mov r5, #1
     str r5, [r4] //set Sticky On
     mov r5, #5
