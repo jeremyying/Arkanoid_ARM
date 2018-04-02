@@ -84,8 +84,7 @@ destroyed:
 .global lives
 lives:
     .int    5
-
-
-
-
-
+    
+.global score
+score:
+  .int 0

@@ -126,10 +126,17 @@ continue:
     bl      drawGame
     bl      moveBall
     bl      movePaddle
+
+    bl checkPowerUp //Spawn PowerUp
+    bl updatePowerup //Updates Spawned PowerUp
+
     ldr     r0, =stickyPack
     cmp     sticky, #1
     streq   sticky, [r0]
     moveq   sticky, #0
+
+    bl      updateStats
+
     b       play
 
 WinGame:
@@ -181,7 +188,15 @@ PressToReturn:
 
   pop {r0}
 
-endPlay:
+  endPlay:
+    ldr r9, =lives
+    mov r10, #5
+    str r10, [r9] //reset Lives to 5 after ending a game
+
+    ldr r9, =score
+    mov r10, #0
+    str r10, [r9] //reset to Score to 0 after ending a game
+
     .unreq  APressed
     pop     {r4-r10, pc}
 

@@ -67,28 +67,32 @@ printNum:
 
 .global updateStats
 updateStats:
-	push    {r4-r10, lr}
+		push    {r4-r10, lr}
 
-	//ldr r4, =stats
-	mov r5, #0xFFFFFFFF
+		ldr r0, =lives
+		      ldr r4, [r0]
+		ldr r0, =score
+		      ldr r6, [r0]
+		mov r5, #0xFFFFFFFF
 
-	//print the score
+		//print the score
 
-	mov 	r0, #999			//character
-	mov 	r3, r5	//color
-	mov 	r1, #25	//y
-	mov 	r2, #665		//x
-	bl printNum
+		mov 	r0, r6			//character
+		mov 	r3, r5	//color
+		mov 	r1, #25	//y
+		mov 	r2, #665		//x
+		bl printNum
 
-	mov 	r0, #1			//character
-	mov 	r3, r5		//color
-	mov 	r1, #25	//y
-	mov 	r2, #1225		//x
+		mov 	r0, r4			//character
+		mov 	r3, r5		//color
+		mov 	r1, #25	//y
+		mov 	r2, #1225		//x
 
-	bl printNum
+		bl printNum
 
-	return:
-    		pop     {r4-r10, pc}
+
+		return:
+			pop     {r4-r10, pc}
 
 .global LivesUpdate
 LivesUpdate:
