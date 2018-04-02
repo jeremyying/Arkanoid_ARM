@@ -17,12 +17,13 @@ DrawPowerUp:
   ldr r4, =PowerUpBlock
   ldr r5, [r4, #8] //PowerUp Type
   ldr r6, [r4, #12] //On/Off
-  cmp r6, #1
-  bne endDraw //Skip if Display toggle is off
+  cmp r6, #0
+  beq endDraw //Skip if Display toggle is off
 
   cmp r5, #1 //check PowerUp type
   ldreq r1, =XPower
-  ldrne r1, =SPower
+  cmp r5, #2
+  ldreq r1, =SPower
 
   ldr     r0, =drawArgs
   str     r1, [r0]
@@ -44,14 +45,14 @@ endDraw:
 //Updates a spawned PowerUp
 .global updatePowerup
 updatePowerup:
-  push {r4-r6, r10, lr}
+  push {r4-r10, lr}
   ldr r0, =PowerUpBlock   //load powerup from memory
   ldr r1, =paddleStats
   ldr r2, [r0, #4] //PowerUp Y Coord
   ldr r3, [r0, #12] //PowerUp On/off
 
   cmp r3, #0 //see if powerup is on
-  beq updatePowerupReturn
+  beq updatePowerupReturn //ret if not on
 
   push {r0-r3}
   bl DrawPowerUp //draws PowerUp
@@ -65,17 +66,17 @@ updatePowerup:
   strge r3, [r0, #12]
   bgt updatePowerupReturn
 
-  ldr r10, [r1, #8]
-  cmp r10, #1 //check if paddle extended
-
   ldr r4, [r1] //load the x of the paddle
   ldr r5, [r0] //load the x of the powerup
   mov r6, r4 //copy paddle x
 
   //set PowerUp Registration boundary
   sub r4, #47 //x Lower Bound
+
+  ldr r10, [r1, #8]
+  cmp r10, #1 //check if paddle extended
   addne r6, #127 //x High Bound (not extended)
-  add r6, #191 //x High Bound (extended)
+  addeq r6, #191 //x High Bound (extended)
 
   cmp r5, r4
   blt updatePowerupReturn //ret if powerup x < Left Paddle x
@@ -95,7 +96,6 @@ updatePowerup:
     mov r4, #1
     str r4, [r1, #8] //extend paddle on
 
-
     b updatePowerupReturn
 
   StickyPowerUp:
@@ -111,7 +111,7 @@ updatePowerup:
     b updatePowerupReturn
 
 updatePowerupReturn:
-  pop {r4-r6, r10, pc}
+  pop {r4-r10, pc}
 
 //spawn powerUP
 .global checkPowerUp
@@ -147,7 +147,7 @@ checkPowerUp:
 
   SetPowerUpFlag:
     ldr r10, =PowerUpBlock
-    mov r9, #1 //set display to 1
+    mov r9, #1 //set display to on
     str r9, [r10, #12]
 
   checkPowerUpReturn:
