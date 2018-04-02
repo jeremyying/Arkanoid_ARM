@@ -20,6 +20,25 @@ DrawPowerUp:
   cmp r6, #0
   beq endDraw //Skip if Display toggle is off
 
+BlackoutPowerUp:
+  bl      calcXYIndex
+  mov     r4, r0
+  mov     r5, r1
+
+  mov     r0, r2				//middle tile to cover
+  mov     r1, r3
+  bl      calcOffset
+  bl      drawBGTile
+
+  mov     r0, r7				//left tile to cover
+  sub     r0, #1
+  cmp		r0, #0
+  blt     backRightTile
+  mov     r1, r8
+  bl      calcOffset
+  bl      drawBGTile
+
+
   cmp r5, #1 //check PowerUp type
   ldreq r1, =XPower
   cmp r5, #2
@@ -39,6 +58,7 @@ DrawPowerUp:
   mov     r1, #48 		//image height
   str     r1, [r0, #16]
   bl      drawImage
+
 endDraw:
   pop {r4-r6, pc}
 
