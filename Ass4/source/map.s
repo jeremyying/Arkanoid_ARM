@@ -197,6 +197,20 @@ PressToReturn:
     mov r10, #0
     str r10, [r9] //reset to Score to 0 after ending a game
 
+    ldr r9, =destroyed
+    str r10, [r9]
+
+    ldr r9, =paddleStats
+    str r10, [r9, #8]
+
+    ldr r9, =stickyPack
+    str r10, [r9]
+    str r10, [r9, #4]
+
+    ldr r9, =attached
+    mov r10, #1
+    str r10, [r9]
+
     .unreq  APressed
     pop     {r4-r10, pc}
 

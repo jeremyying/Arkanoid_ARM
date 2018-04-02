@@ -3,7 +3,7 @@
 .global moveBall
 moveBall:
     push    {r4-r7, lr}
-
+    bl      drawBFTile
 
     ldr     r0, =attached
     ldr     r4, [r0]
@@ -11,7 +11,7 @@ moveBall:
     cmp     r4, #1
     beq     padBall         //branch to move ball on paddle speed
 
-    bl      drawBFTile
+    //bl      drawBFTile
 
     bl      padCollision
     cmp     r0, #1
@@ -76,6 +76,7 @@ loseLife:
     b       drawBall
 
 padBall:
+
     ldr     r0, =paddleStats
     ldr     r1, [r0, #4]		    //load paddle x coordinate
     ldr     r0, =ballStats
@@ -289,6 +290,15 @@ firstFlip:
     cmp     r4, #61
     strge   r1, [r0, #8]
     strlt   r2, [r0, #12]
+
+    //Jeremy Code
+    ldr r1, [r0] //load ball x
+    ldr r2, [r0, #4] //load ball y
+    ldr r0, =PowerUpBlock
+    str r1, [r0]
+    str r2, [r0, #4]
+    //Jeremy Code
+
     ldr	    r0, =score
     ldr     r1, [r0]
     add     r1, #1
@@ -319,6 +329,15 @@ secFlip:
     ldr     r1, [r0, #8]
     neg     r1, r1
     str     r1, [r0, #8]
+
+    //Jeremy Code
+    ldr r1, [r0] //load ball x
+    ldr r2, [r0, #4] //load ball y
+    ldr r0, =PowerUpBlock
+    str r1, [r0]
+    str r2, [r0, #4]
+    //Jeremy Code
+
     ldr	    r0, =score
     ldr     r1, [r0]
     add     r1, #1
@@ -352,6 +371,15 @@ thirdFlip:
     ldr     r1, [r0, #12]
     neg     r1, r1
     str     r1, [r0, #12]
+
+    //Jeremy Code
+    ldr r1, [r0] //load ball x
+    ldr r2, [r0, #4] //load ball y
+    ldr r0, =PowerUpBlock
+    str r1, [r0]
+    str r2, [r0, #4]
+    //Jeremy Code
+
     ldr	    r0, =score
     ldr     r1, [r0]
     add     r1, #1
@@ -387,6 +415,15 @@ lastFlip:
     cmp     r9, #1
     strne   r1, [r0, #8]
     streq   r2, [r0, #12]
+
+    //Jeremy Code
+    ldr r1, [r0] //load ball x
+    ldr r2, [r0, #4] //load ball y
+    ldr r0, =PowerUpBlock
+    str r1, [r0]
+    str r2, [r0, #4]
+    //Jeremy Code
+
     ldr	    r0, =score
     ldr     r1, [r0]
     add     r1, #1

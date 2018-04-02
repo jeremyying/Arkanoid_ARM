@@ -48,7 +48,7 @@ updatePowerup:
   ldr r0, =PowerUpBlock   //load powerup from memory
   ldr r1, =paddleStats
   ldr r2, [r0, #4] //PowerUp Y Coord
-  ldr r3, [r0, #12] //PowerUp Type
+  ldr r3, [r0, #12] //PowerUp On/off
 
   cmp r3, #0 //see if powerup is on
   beq updatePowerupReturn
@@ -89,17 +89,26 @@ updatePowerup:
   bne StickyPowerUp
 
   ExtendPowerUp:
-    mov r4, #1
-    str r4, [r1, #8] //extend paddle on
     mov r4, #2
     str r4, [r0, #8] //change Powerup to Sticky
 
+    mov r4, #1
+    str r4, [r1, #8] //extend paddle on
+
+
+    b updatePowerupReturn
+
   StickyPowerUp:
+    mov r4, #1
+    str r4, [r0, #8] //change Powerup to extend paddle
+
     ldr r4, =stickyPack
     mov r5, #1
     str r5, [r4] //set Sticky On
     mov r5, #5
     str r5, [r4, #4] //set 5 moves for sticky
+
+    b updatePowerupReturn
 
 updatePowerupReturn:
   pop {r4-r6, r10, pc}
@@ -112,14 +121,27 @@ checkPowerUp:
   ldr r10, =destroyed
   ldr r10, [r10] //load destroyed int
 
-  cmp r10, #20 //check if 20 blocks are destroyed
+  //TEST
+  //TEST
+  cmp r10, #1 //check if 20 blocks are destroyed
+  beq SetPowerUpFlag
+
+  cmp r10, #5 //check if 40 blocks are destroyed
+  beq SetPowerUpFlag
+
+  cmp r10, #10 //check if 60 blocks are destroyed
+  beq SetPowerUpFlag
+  //TEST
+  //TEST
+
+  /*cmp r10, #20 //check if 20 blocks are destroyed
   beq SetPowerUpFlag
 
   cmp r10, #40 //check if 40 blocks are destroyed
   beq SetPowerUpFlag
 
-  cmp r10, #60 //check if 60 blocks are desotryed
-  beq SetPowerUpFlag
+  cmp r10, #60 //check if 60 blocks are destroyed
+  beq SetPowerUpFlag*/
 
   b checkPowerUpReturn
 

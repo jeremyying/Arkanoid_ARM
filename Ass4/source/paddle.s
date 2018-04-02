@@ -34,12 +34,12 @@ initBall:
     ldr     r2, =ballStats
     ldr     r1, =ball             //image ascii text address
     str     r1, [r0]
-    //mov     r1, #900
-    mov     r1, #1000                   //x coordinate
+    mov     r1, #900
+    //mov     r1, #1000                   //x coordinate
     str     r1, [r0, #4]
     str     r1, [r2]
-    //mov     r1, #896
-    mov		r1, #700                    //y coordinate
+    mov     r1, #896
+    //mov		r1, #700                    //y coordinate
     str     r1, [r0, #8]
     str     r1, [r2, #4]
     mov     r1, #24                //image width
@@ -84,7 +84,7 @@ destroyed:
 .global lives
 lives:
     .int    5
-    
+
 .global score
 score:
   .int 0

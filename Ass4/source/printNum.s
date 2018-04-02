@@ -69,6 +69,41 @@ printNum:
 updateStats:
 		push    {r4-r10, lr}
 
+			mov     r5, #665        //x coordinate to blackout
+			mov     r6, #25        //y coordinate to blackout
+			mov     r7, #710         //max x
+			mov     r8, #55        //max y
+
+	blackoutUpdateScore:
+			mov     r0, r5
+			mov     r1, r6
+			mov     r2, #0xFF000000
+			bl      DrawPixel
+			add     r5, #1
+			teq     r5, r7
+			moveq   r5, #665
+			addeq   r6, #1
+			cmp     r6, r8
+			blt     blackoutUpdateScore
+
+
+			mov     r5, #1225        //x coordinate to blackout
+			mov     r6, #25        //y coordinate to blackout
+			mov     r7, #1260         //max x
+			mov     r8, #55        //max y
+
+	blackoutUpdateLives:
+			mov     r0, r5
+			mov     r1, r6
+			mov     r2, #0xFF000000
+			bl      DrawPixel
+			add     r5, #1
+			teq     r5, r7
+			moveq   r5, #1225
+			addeq   r6, #1
+			cmp     r6, r8
+			blt     blackoutUpdateLives
+
 		ldr r0, =lives
 		      ldr r4, [r0]
 		ldr r0, =score
@@ -91,8 +126,7 @@ updateStats:
 		bl printNum
 
 
-		return:
-			pop     {r4-r10, pc}
+		pop     {r4-r10, pc}
 
 .global LivesUpdate
 LivesUpdate:
