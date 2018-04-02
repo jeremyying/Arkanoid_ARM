@@ -131,6 +131,8 @@ continue:
     cmp     sticky, #1
     streq   sticky, [r0]
     moveq   sticky, #0
+
+    bl      updateStats
     b       play
 
 WinGame:

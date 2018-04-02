@@ -60,10 +60,7 @@ moveBall:
     b       drawBall
 
 loseLife:
-    ldr     r0, =lives
-    ldr     r1, [r0]
-    sub     r1, #1 //decrement lives by 1
-    str     r1, [r0] //stores lives back
+
     /* mov     r1, #1
     ldr     r0, =attached
     str     r1, [r0]
@@ -84,6 +81,11 @@ loseLife:
     ldr     r0, =ballStats
     ldr     r4, [r0]		//ball x coordinate
     ldr     r5, [r0, #4]	//ball y coordinate
+
+    ldr     r0, =lives
+    ldr     r1, [r0]
+    sub     r1, #1 //decrement lives by 1
+    str     r1, [r0] //stores lives back
     b       drawBall
 
 
